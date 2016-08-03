@@ -1,0 +1,85 @@
+library(shiny)
+library(tidyr)
+library(shinythemes)
+library(shinyBS)
+library(gplots)
+library(RColorBrewer)
+library(maptools)
+library(ggplot2)
+library(shinydashboard)
+library(plotly)
+library(scales)
+library(lattice)
+library(car)
+library(shinyjs)
+library(grid)
+library(googlesheets)
+library(rgdal)
+library(leaflet)
+library(htmltools)
+library(raster)
+library(sp)
+library(dplyr)
+
+setwd("~/Documents/github/visualizations/beta_tool/")
+#setwd("/srv/shiny-server/ebc-dataportal/")
+map_data_final <- readRDS("data/map_data_final.rds")
+# t <- readRDS("data/map_data_final_2.rds")
+# xl <- read.csv("test_data2.csv",header=TRUE,encoding="utf8")
+load("data/evidence_based_5_13_16.RData")
+source("functions.R")
+
+definitions <- read.csv("data/definitions.csv",header=TRUE)
+definitions <- as.data.frame(definitions)
+
+var.labels <- read.csv("data/codes.csv",header=TRUE)
+var.labels <- as.data.frame(var.labels)
+
+oecd <- read.csv("data/oecd.csv",header=TRUE)
+regions <- read.csv("data/country_list2.csv", header=TRUE)
+colnames(regions) <- c("COUNTRY", "REGION","CODE","SUBREGION","POINT")
+reg <- read.csv("data/allcountries.csv",header=TRUE)
+
+coordinates <- read.csv("data/country_lat_lon.csv",header=TRUE)
+countries_shape <- read.csv("data/country_coordinates.csv",header=TRUE)
+
+int_type = c("area_protect", "area_mgmt", "res_mgmt", "sp_control", "restoration", "sp_mgmt", "sp_recov", "sp_reint", "ex_situ", "form_ed", "training", "aware_comm", "legis", "pol_reg", "priv_codes", "compl_enfor", "liv_alt", "sub", "market", "non_mon", "inst_civ_dev", "part_dev", "cons_fin", "sus_use", "other")
+group_type = c("area_protect", "res_mgmt", "land_wat_mgmt", "species_mgmt", "education", "law_policy", "liv_eco_inc", "ext_cap_build", "sus_use", "other")
+out_type = c("mat_liv_std", "eco_liv_std", "health", "education", "soc_rel", "sec_saf", "gov", "sub_well", "culture", "free_choice", "other")
+biome_type = c("M_P", "M_TSS", "M_TU", "M_TRU", "M_TRC", "M_TSTSS", "FW_LL", "FW_LRD", "FW_PF", "FW_MF", "FW_TCR", "FW_TFRW", "FW_TUR", "FW_TSTCR", "FW_TSTFRW", "FW_TSTUR", "FW_XFEB", "FW_OI", "T_TSTMBF", "T_TSTDBF", "T_TSTCF", "T_TBMF", "T_TCF", "T_BFT", "T_MFWS", "T_TSTGSS", "T_TGSS", "T_FGS", "T_MGS", "T_T", "T_DXS", "T_M")
+biome_group = c("MAR","FRW","GRS","FOR","TUN","DES","MAN")
+marine_type = c("M_P", "M_TSS", "M_TU", "M_TRU", "M_TRC", "M_TSTSS")
+forest_type = c("T_TSTMBF", "T_TSTDBF", "T_TSTCF", "T_TBMF", "T_TCF", "T_BFT", "T_MFWS")
+grass_type = c("T_TSTGSS", "T_TGSS", "T_FGS", "T_MGS")
+desert_type = c("T_DXS")
+tundra_type = c("T_T")
+mangrove_type = c("T_M")
+fresh_type = c("FW_LL", "FW_LRD", "FW_PF", "FW_MF", "FW_TCR", "FW_TFRW", "FW_TUR", "FW_TSTCR", "FW_TSTFRW", "FW_TSTUR", "FW_XFEB", "FW_OI")
+study_types <- c("BACI","BA","CT","CG","BACG","CGCI","None")
+
+int_labels = c("Area protection", "Area management", "Resource management/protection", "Species control", "Restoration", "Species management", "Species recovery", "Species reintroduction", "Ex-situ conservation", "Formal education", "Training", "Awareness & Communications", "Legislation", "Policies & Regulations", "Private sector standards and codes", "Compliance & enforcement", "Enterprises & livelihood alternatives", "Substitution", "Market-based forces", "Non-monetary values", "Institutional & civil society development", "Alliance & partnership development", "Conservation finance", "Sustainable use", "Other")
+out_labels = c("Material living standards", "Economic living standards", "Health", "Education", "Social relations", "Security & safety", "Governance & empowerment", "Subjective well-being", "Culture & Spiritual", "Freedom of choice/action", "Other")
+group_labels = c("Area protection", "Resource protection/management","Land/Water management",  "Species management", "Education", "Law & Policy", "Livelihood, economic & other incentives", "External capacity building", "Sustainable use", "Other")
+biome_labels = c("Marine-Polar","Marine-Temperate Shelfs & Seas","Marine-Temperate Upwelling","Marine-Tropical Upwelling","Marine-Tropical Coral Reefs","Marine-Tropical/Subtropical Shelfs & Seas", "Freshwater-Large Lakes", "Freshwater-Large River Deltas","Freshwater-Polar Freshwaters","Freshwater-Montane Freshwaters","Freshwater-Temperate Coastal Rivers","Freshwater-Temperate Floodplain Rivers & Wetland Complexes","Freshwater-Temperate Upland Rivers","Freshwater-Tropical/Subtropical Coastal Rivers","Freshwater-Tropical/Subtropical Floodplain Rivers & Wetland Complexes","Freshwater-Tropical/Subtropical Upland Rivers","Freshwater-Xeric Freshwaters & Endorheic (Closed) Basins","Freshwater-Oceanic Islands","Terrestrial-Tropical/Subtropical Moist Broadleaf Forests","Terrestrial-Tropical/Subtropical Dry Broadleaf Forests","Terrestrial-Tropical/Subtropical Coniferous Forests","Terrestrial-Temperate Broadleaf & Mixed Forests","Terrestrial-Temperate Coniferous Forests","Terrestrial-Boreal Forests/Taiga","Terrestrial-Mediterranean Forests, Woodlands & Scrubs","Terrestrial-Tropical/Subtropical Grasslands, Savannas, & Shrublands","Terrestrial-Temperate Grasslands, Savannas & Shrublands","Terrestrial-Flooded Grasslands & Savannas","Terrestrial-Montane Grasslands & Shrublands","Terrestrial-Tundra","Terrestrial-Deserts & Xeric Shrublands","Terrestrial-Mangroves")
+bg_labels = c("Marine","Freshwater","Grasslands","Forests","Tundra","Deserts","Mangrove")
+marine_labels = c("Polar","Temperate Shelfs & Seas","Temperate Upwelling","Tropical Upwelling","Tropical Coral Reefs","Tropical/Subtropical Shelfs & Seas")
+forest_labels = c("Tropical/Subtropical Moist Broadleaf Forests","Tropical/Subtropical Dry Broadleaf Forests","Tropical/Subtropical Coniferous Forests","Temperate Broadleaf & Mixed Forests","Temperate Coniferous Forests","Boreal Forests/Taiga","Mediterranean Forests, Woodlands & Scrubs")
+grassland_labels = c("Tropical/Subtropical Grasslands, Savannas, & Shrublands","Temperate Grasslands, Savannas & Shrublands","Flooded Grasslands & Savannas","Montane Grasslands & Shrublands")
+tundra_labels = c("Tundra")
+desert_labels = c("Deserts & Xeric Shrublands")
+mangrove_labels = c("Mangroves")
+freshwater_labels = c("Large Lakes", "Large River Deltas","Polar Freshwaters","Montane Freshwaters","Temperate Coastal Rivers","Temperate Floodplain Rivers & Wetland Complexes","Temperate Upland Rivers","Tropical/Subtropical Coastal Rivers","Tropical/Subtropical Floodplain Rivers & Wetland Complexes","Tropical/Subtropical Upland Rivers","Xeric Freshwaters & Endorheic (Closed) Basins","Oceanic Islands")
+study_labels <- c("Before/after, control/intervention","Before/after","Change over time","Comparison group","Before/after, comparison group","Comparison group, control/intervention", "No comparator")
+
+countries <- as.vector(reg$Country)
+
+# Define the fields we want to save from the form
+fields <- c("name", "email","organization", "agree")
+
+# Define functions
+table <- "portal_registration"
+
+# Read in terrestrial biome and ecoregion classifications
+terr_labs <- read.csv("data/ter_biome.csv",header=TRUE)
+colnames(terr_labs) <- c("BIOME","ECOREGION")
+

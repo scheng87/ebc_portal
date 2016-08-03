@@ -1,0 +1,247 @@
+"","ISO3","NAME","LON","LAT"
+"0","ATG","Antigua and Barbuda",-61.783,17.078
+"1","DZA","Algeria",2.632,28.163
+"2","AZE","Azerbaijan",47.395,40.43
+"3","ALB","Albania",20.068,41.143
+"4","ARM","Armenia",44.563,40.534
+"5","AGO","Angola",17.544,-12.296
+"6","ASM","American Samoa",-170.73,-14.318
+"7","ARG","Argentina",-65.167,-35.377
+"8","AUS","Australia",136.189,-24.973
+"9","BHR","Bahrain",50.562,26.019
+"10","BRB","Barbados",-59.559,13.153
+"11","BMU","Bermuda",-64.709,32.336
+"12","BHS","Bahamas",-78.014,24.628
+"13","BGD","Bangladesh",89.941,24.218
+"14","BLZ","Belize",-88.602,17.219
+"15","BIH","Bosnia and Herzegovina",17.786,44.169
+"16","BOL","Bolivia",-64.671,-16.715
+"17","MMR","Burma",96.041,21.718
+"18","BEN","Benin",2.469,10.541
+"19","SLB","Solomon Islands",160.109,-9.611
+"20","BRA","Brazil",-53.089,-10.772
+"21","BGR","Bulgaria",25.231,42.761
+"22","BRN","Brunei Darussalam",114.591,4.468
+"23","CAN","Canada",-109.433,59.081
+"24","KHM","Cambodia",104.564,12.714
+"25","LKA","Sri Lanka",80.704,7.612
+"26","COG","Congo",15.986,-0.055
+"27","COD","Democratic Republic of the Congo",23.654,-2.876
+"28","BDI","Burundi",29.887,-3.356
+"29","CHN","China",106.514,33.42
+"30","AFG","Afghanistan",65.216,33.677
+"31","BTN","Bhutan",90.429,27.415
+"32","CHL","Chile",-69.433,-23.389
+"33","CYM","Cayman Islands",-81.198,19.314
+"34","CMR","Cameroon",12.277,5.133
+"35","TCD","Chad",18.665,15.361
+"36","COM","Comoros",43.337,-11.758
+"37","COL","Colombia",-73.076,3.9
+"38","CRI","Costa Rica",-83.946,9.971
+"39","CAF","Central African Republic",20.483,6.571
+"40","CUB","Cuba",-77.781,21.297
+"41","CPV","Cape Verde",-23.634,15.071
+"42","COK","Cook Islands",-159.782,-21.219
+"43","CYP","Cyprus",33.219,35.043
+"44","DNK","Denmark",9.264,56.058
+"45","DJI","Djibouti",42.516,11.9
+"46","DMA","Dominica",-61.356,15.475
+"47","DOM","Dominican Republic",-70.729,19.015
+"48","ECU","Ecuador",-78.497,-1.385
+"49","EGY","Egypt",29.872,26.494
+"50","IRL","Ireland",-8.152,53.177
+"51","GNQ","Equatorial Guinea",10.488,1.607
+"52","EST","Estonia",25.793,58.674
+"53","ERI","Eritrea",38.219,16.045
+"54","SLV","El Salvador",-88.866,13.736
+"55","ETH","Ethiopia",39.616,8.626
+"56","AUT","Austria",14.912,47.683
+"57","CZE","Czech Republic",15.338,49.743
+"58","GUF","French Guiana",-53.241,3.924
+"59","FIN","Finland",26.272,64.504
+"60","FJI","Fiji",177.974,-17.819
+"61","FLK","Falkland Islands (Malvinas)",-58.694,-51.665
+"62","FSM","Micronesia, Federated States of",158.235,6.883
+"63","PYF","French Polynesia",-149.462,-17.626
+"64","FRA","France",2.55,46.565
+"65","GMB","Gambia",-15.386,13.453
+"66","GAB","Gabon",11.797,-0.591
+"67","GEO","Georgia",43.518,42.176
+"68","GHA","Ghana",-1.207,7.96
+"69","GRD","Grenada",-61.678,12.118
+"70","GRL","Greenland",-41.391,74.719
+"71","DEU","Germany",9.851,51.11
+"72","GUM","Guam",144.707,13.385
+"73","GRC","Greece",21.766,39.666
+"74","GTM","Guatemala",-90.398,15.256
+"75","GIN","Guinea",-10.942,10.439
+"76","GUY","Guyana",-58.974,4.792
+"77","HTI","Haiti",-72.278,19.142
+"78","HND","Honduras",-86.863,14.819
+"79","HRV","Croatia",16.693,45.723
+"80","HUN","Hungary",19.134,47.07
+"81","ISL","Iceland",-18.48,64.764
+"82","IND","India",78.5,21
+"83","IRN","Iran (Islamic Republic of)",54.301,32.565
+"84","ISR","Israel",34.851,31.026
+"85","ITA","Italy",12.8,42.7
+"86","CIV","Cote d'Ivoire",-5.556,7.632
+"87","IRQ","Iraq",43.772,33.048
+"88","JPN","Japan",139.068,36.491
+"89","JAM","Jamaica",-77.32,18.151
+"90","JOR","Jordan",36.319,30.703
+"91","KEN","Kenya",37.858,0.53
+"92","KGZ","Kyrgyzstan",74.555,41.465
+"93","PRK","Korea, Democratic People's Republic of",126.451,39.778
+"94","KIR","Kiribati",175.036,-1.508
+"95","KOR","Korea, Republic of",128.103,36.504
+"96","KWT","Kuwait",47.376,29.476
+"97","KAZ","Kazakhstan",67.301,48.16
+"98","LAO","Lao People's Democratic Republic",102.471,19.905
+"99","LBN","Lebanon",35.888,33.92
+"100","LVA","Latvia",25.641,56.858
+"101","BLR","Belarus",28.047,53.54
+"102","LTU","Lithuania",23.897,55.336
+"103","LBR","Liberia",-9.657,6.682
+"104","SVK","Slovakia",19.491,48.707
+"105","LIE","Liechtenstein",9.555,47.153
+"106","LBY","Libyan Arab Jamahiriya",18.023,27.044
+"107","MDG","Madagascar",46.706,-19.374
+"108","MTQ","Martinique",-61.021,14.653
+"109","MNG","Mongolia",102.876,46.056
+"110","MSR","Montserrat",-62.187,16.736
+"111","MKD","The former Yugoslav Republic of Macedonia",21.698,41.6
+"112","MLI","Mali",-3.524,17.35
+"113","MAR","Morocco",-5.758,32.706
+"114","MUS","Mauritius",57.583,-20.255
+"115","MRT","Mauritania",-10.332,20.26
+"116","MLT","Malta",14.442,35.89
+"117","OMN","Oman",57.407,21.656
+"118","MDV","Maldives",72.92,3.548
+"119","MEX","Mexico",-102.535,23.951
+"120","MYS","Malaysia",102.195,4.201
+"121","MOZ","Mozambique",37.923,-14.422
+"122","MWI","Malawi",33.808,-13.4
+"123","NCL","New Caledonia",165.447,-21.359
+"124","NIU","Niue",-169.869,-19.052
+"125","NER","Niger",9.398,17.426
+"126","ABW","Aruba",-69.977,12.517
+"127","AIA","Anguilla",-63.032,18.237
+"128","BEL","Belgium",4.664,50.643
+"129","HKG","Hong Kong",114.129,22.423
+"130","MNP","Northern Mariana Islands",145.623,15.005
+"131","FRO","Faroe Islands",-6.864,62.05
+"132","AND","Andorra",1.576,42.549
+"133","GIB","Gibraltar",-5.345,36.138
+"134","IMN","Isle of Man",-4.527,54.229
+"135","LUX","Luxembourg",6.088,49.771
+"136","MAC","Macau",113.545,22.2
+"137","MCO","Monaco",7.412,43.75
+"138","PSE","Palestine",35.278,32.037
+"139","MNE","Montenegro",19.254,42.792
+"140","MYT","Mayotte",45.155,-12.777
+"141","ALA","Åland Islands",19.952,60.198
+"142","NFK","Norfolk Island",167.953,-29.037
+"143","CCK","Cocos (Keeling) Islands",96.839,-12.173
+"144","ATA","Antarctica",21.304,-80.446
+"145","BVT","Bouvet Island",3.412,-54.422
+"146","ATF","French Southern and Antarctic Lands",69.117,-49.302
+"147","HMD","Heard Island and McDonald Islands",73.507,-53.111
+"148","IOT","British Indian Ocean Territory",72.416,-7.335
+"149","CXR","Christmas Island",105.704,-10.444
+"150","UMI","United States Minor Outlying Islands",-160.027,-0.385
+"151","VUT","Vanuatu",166.899,-15.376
+"152","NGA","Nigeria",8.105,9.594
+"153","NLD","Netherlands",5.389,52.077
+"154","NOR","Norway",8.74,61.152
+"155","NPL","Nepal",83.939,28.253
+"156","NRU","Nauru",166.93,-0.522
+"157","SUR","Suriname",-55.912,4.127
+"158","NIC","Nicaragua",-85.034,12.84
+"159","NZL","New Zealand",172.235,-42.634
+"160","PRY","Paraguay",-58.391,-23.236
+"161","PER","Peru",-75.552,-9.326
+"162","PAK","Pakistan",69.386,29.967
+"163","POL","Poland",19.401,52.125
+"164","PAN","Panama",-80.92,8.384
+"165","PRT","Portugal",-8.058,40.309
+"166","PNG","Papua New Guinea",143.459,-5.949
+"167","GNB","Guinea-Bissau",-14.651,12.125
+"168","QAT","Qatar",51.191,25.316
+"169","REU","Reunion",55.538,-21.122
+"170","ROU","Romania",24.969,45.844
+"171","MDA","Republic of Moldova",28.599,47.193
+"172","PHL","Philippines",122.466,11.118
+"173","PRI","Puerto Rico",-66.466,18.221
+"174","RUS","Russia",96.689,61.988
+"175","RWA","Rwanda",29.917,-1.998
+"176","SAU","Saudi Arabia",44.585,24.023
+"177","KNA","Saint Kitts and Nevis",-62.769,17.34
+"178","SYC","Seychelles",55.474,-4.647
+"179","ZAF","South Africa",23.121,-30.558
+"180","LSO","Lesotho",28.243,-29.581
+"181","BWA","Botswana",23.815,-22.182
+"182","SEN","Senegal",-14.881,15.013
+"183","SVN","Slovenia",14.827,46.124
+"184","SLE","Sierra Leone",-11.792,8.56
+"185","SGP","Singapore",103.808,1.351
+"186","SOM","Somalia",48.316,9.774
+"187","ESP","Spain",-3.649,40.227
+"188","LCA","Saint Lucia",-60.969,13.898
+"189","SDN","Sudan",30.05,13.832
+"190","SWE","Sweden",15.27,62.011
+"191","SYR","Syrian Arab Republic",38.506,35.013
+"192","CHE","Switzerland",7.908,46.861
+"193","TTO","Trinidad and Tobago",-61.253,10.468
+"194","THA","Thailand",100.844,15.7
+"195","TJK","Tajikistan",69.42,38.665
+"196","TKL","Tokelau",-171.853,-9.193
+"197","TON","Tonga",-175.185,-21.202
+"198","TGO","Togo",1.081,8.799
+"199","STP","Sao Tome and Principe",6.629,0.201
+"200","TUN","Tunisia",9.596,35.383
+"201","TUR","Turkey",35.179,39.061
+"202","TUV","Tuvalu",179.219,-8.514
+"203","TKM","Turkmenistan",59.384,39.122
+"204","TZA","United Republic of Tanzania",34.823,-6.27
+"205","UGA","Uganda",32.386,1.28
+"206","GBR","United Kingdom",-1.6,53
+"207","UKR","Ukraine",31.388,49.016
+"208","USA","United States",-98.606,39.622
+"209","BFA","Burkina Faso",-1.74,12.278
+"210","URY","Uruguay",-56.012,-32.8
+"211","UZB","Uzbekistan",63.17,41.75
+"212","VCT","Saint Vincent and the Grenadines",-61.194,13.248
+"213","VEN","Venezuela",-66.166,7.125
+"214","VGB","British Virgin Islands",-64.39,18.483
+"215","VNM","Viet Nam",105.314,21.491
+"216","VIR","United States Virgin Islands",-64.785,17.741
+"217","NAM","Namibia",17.218,-22.133
+"218","WLF","Wallis and Futuna Islands",-178.131,-14.289
+"219","WSM","Samoa",-172.414,-13.652
+"220","SWZ","Swaziland",31.497,-26.562
+"221","YEM","Yemen",48.355,15.807
+"222","ZMB","Zambia",26.32,-14.614
+"223","ZWE","Zimbabwe",29.872,-19
+"224","IDN","Indonesia",114.252,-0.976
+"225","GLP","Guadeloupe",-61.441,16.286
+"226","ANT","Netherlands Antilles",-68.87,12.123
+"227","ARE","United Arab Emirates",54.163,23.549
+"228","TLS","Timor-Leste",125.878,-8.822
+"229","PCN","Pitcairn Islands",-128.316,-24.366
+"230","PLW","Palau",134.57,7.501
+"231","MHL","Marshall Islands",168.963,7.595
+"232","SPM","Saint Pierre and Miquelon",-56.325,47.042
+"233","SHN","Saint Helena",-5.71,-15.953
+"234","SMR","San Marino",12.46,43.942
+"235","TCA","Turks and Caicos Islands",-71.95,21.902
+"236","ESH","Western Sahara",-13.706,24.554
+"237","SRB","Serbia",20.806,44.032
+"238","VAT","Holy See (Vatican City)",12.451,41.904
+"239","SJM","Svalbard",18.374,78.83
+"240","MAF","Saint Martin",-63.041,18.094
+"241","BLM","Saint Barthelemy",-63.043,18.04
+"242","GGY","Guernsey",-2.576,49.459
+"243","JEY","Jersey",-2.129,49.219
+"244","SGS","South Georgia South Sandwich Islands",-36.891,-54.209
+"245","TWN","Taiwan",120.946,23.754
