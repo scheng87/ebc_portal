@@ -1,0 +1,33 @@
+mht,ecoregion
+MAR,Polar
+MAR,Temperate shelfs & seas
+MAR,Temperate upwelling
+MAR,Tropical upwelling
+MAR,Tropical coral reefs
+MAR,Tropical/subtropical shelfs & seas
+FRW,Large lakes
+FRW,Large river deltas
+FRW,Polar freshwaters
+FRW,Montane freshwaters
+FRW,Temperate coastal rivers
+FRW,Temperate floodplain rivers & wetland complexes
+FRW,Temperate upland rivers
+FRW,Tropical/subtropical coastal rivers
+FRW,Tropical/subtropical floodplain rivers & wetland complexes
+FRW,Tropical/subtropical upland rivers
+FRW,Xeric freshwaters & Endorheic (Closed) Basins
+FRW,Oceanic Islands
+FOR,Tropical/subtropical moist broadleaf forests
+FOR,Tropical/subtropical dry broadleaf forests
+FOR,Tropical/subtropical coniferous forests
+FOR,Temperate broadleaf & mixed forests
+FOR,Temperate coniferous forests
+FOR,Boreal forests/taiga
+FOR,"Mediterranean forests, woodlands, and scrublands"
+GRS,"Tropical/subtropical grasslands, savannas, & shrublands"
+GRS,"Temperate grasslands, savannas, & shrublands"
+GRS,Flooded grasslands & savannas
+GRS,Montane grasslands & shrublands
+TUN,Tundra
+DES,Deserts
+MAN,Mangroves

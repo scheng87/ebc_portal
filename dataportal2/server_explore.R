@@ -2,26 +2,32 @@ elink = function(env_serv) with (env_serv, {
   data <- map_data_final
   
   dataInputB <- reactive({
-    df <- data[data$Study_supplychain %in% input$supplychain,]
-    df <- distinct(df)
+    if (input$region != "All"){
+      sub <- data[data$region == input$region,]
+    } else 
+      sub <- data
+    sub <- distinct(sub)
     })
   
   dataInputC <- reactive({
-    data <- as.data.frame(dataInputB())
-    df <- data[data$region %in% input$region,]
-    df <- distinct(df)
+    data <- dataInputB()
+    if (input$biome != "All"){
+      sub <- data[data$biome_group == input$biome,]
+    } else 
+      sub <- data
+    sub <- distinct(sub)
   })
         
   final_input <- reactive({
     if (input$expand == TRUE){
-      io_counts = matrix(nrow=16, ncol=14)
+      io_counts = matrix(nrow=length(out_type), ncol=length(int_type))
       rownames(io_counts) <- out_type
       colnames(io_counts) <- int_type
       io_counts <- io_counts
     } else if (input$expand == FALSE){
-      io_counts = matrix(nrow=3, ncol=5)
-      rownames(io_counts) <- out_group
-      colnames(io_counts) <- int_group
+      io_counts = matrix(nrow=length(out_type), ncol=length(group_type))
+      rownames(io_counts) <- out_type
+      colnames(io_counts) <- group_type
       io_counts <- io_counts
     }
   })
@@ -29,9 +35,9 @@ elink = function(env_serv) with (env_serv, {
   final_matrix <- reactive({
     io_counts <- final_input()
     if (input$expand == FALSE){
-      for (i in int_group){
-        for (j in out_group){
-          subset <- filter(dataInputC(), out_group == j, int_group == i)
+      for (i in group_type){
+        for (j in out_type){
+          subset <- filter(dataInputC(), Outcome == j, int_group == i)
           io_counts[j,i] <- n_distinct(subset$aid)
         }
       }
@@ -66,7 +72,9 @@ elink = function(env_serv) with (env_serv, {
         labs(x = "Types of actions",y="Types of outcomes") +
         scale_fill_gradient2(name="No. of unique articles",midpoint=(max(DATA$aid_count,na.rm=TRUE)/2),low="#c7e9c0",mid="#41ab5d",high="#00441b",na.value="white") +
         coord_fixed(ratio=5/6) +
-        geom_text(size=5,family="Proxima Nova")
+        geom_text(size=5,family="Proxima Nova") +
+        scale_x_discrete(name="IUCN conservation intervention types",limits=c("area_protect", "land_wat_mgmt", "res_mgmt", "species_mgmt", "education", "law_policy", "liv_eco_inc", "ext_cap_build", "sus_use", "other"),labels=c("Area protection", "Land/Water management", "Resource management", "Species management", "Education", "Law & Policy", "Livelihood, economic & other incentives", "External capacity building", "Sustainable use", "Other")) +
+        scale_y_discrete(name="Human well-being outcomes",limits=c("other","free_choice","culture","sub_well","gov","sec_saf","soc_rel","education","health","mat_liv_std","eco_liv_std"),labels=c("Other","Freedom of choice/action","Cultural & spiritual","Subjective well-being","Governance & empowerment","Security & safety","Social relations","Education","Health","Material living standards","Economic living standards"))
     } else if (input$expand == TRUE){
       ggplot(DATA, aes(y=outcome,x=int,label=aid_count)) +
         geom_tile(aes(fill=aid_count),colour="black") +
@@ -75,14 +83,15 @@ elink = function(env_serv) with (env_serv, {
         scale_fill_gradient2(name="No. of unique articles",midpoint=(max(DATA$aid_count,na.rm=TRUE)/2),low="#c7e9c0",mid="#41ab5d",high="#00441b",na.value="white") +
         coord_fixed(ratio=5/6) +
         geom_text(size=4,family="Proxima Nova",color="gray") +
-        scale_x_discrete(name="Intervention sub-types",limits=c("laws","policies","detection","prosecution","civil","substitution","awareness","market","disincentive","stewardship","conflict","spat_protect","harvest_reg","culture"),labels=c("Laws, regulations & codes","Policies & regulations", "Detection","Prosecution","Civil action","Substitutions","Awareness raising","Market-based incentives","Disincentives for illegal behavior","Incentives for stewardship of wildlife","Decrease human-wildlife conflict","Spatial areas of protection","Regulate harvest","Culturing of species"))
+        scale_x_discrete(name="IUCN conservation intervention sub-types",limits=c("area_protect", "area_mgmt", "res_mgmt", "sp_control", "restoration", "sp_mgmt", "sp_recov", "sp_reint", "ex_situ", "form_ed", "training", "aware_comm", "legis", "pol_reg", "priv_codes", "compl_enfor", "liv_alt", "sub", "market", "non_mon", "inst_civ_dev", "part_dev", "cons_fin", "sus_use", "other"),labels=c("Area protection", "Area management", "Resource management/protection", "Species control", "Restoration", "Species management", "Species recovery", "Species reintroduction", "Ex-situ conservation", "Formal education", "Training", "Awareness & Communications", "Legislation", "Policies & Regulations", "Private sector standards and codes", "Compliance & enforcement", "Enterprises & livelihood alternatives", "Substitution", "Market-based forces", "Non-monetary values", "Institutional & civil society development", "Alliance & partnership development", "Conservation finance", "Sustainable use", "Other")) +
+        scale_y_discrete(name="Human well-being outcomes",limits=c("other","free_choice","culture","sub_well","gov","sec_saf","soc_rel","education","health","mat_liv_std","eco_liv_std"),labels=c("Other","Freedom of choice/action","Cultural & spiritual","Subjective well-being","Governance & empowerment","Security & safety","Social relations","Education","Health","Material living standards","Economic living standards"))
     }
   })
   
   output$map_data <- DT::renderDataTable({
     data <- distinct(dataInputC())
-    data <- select(data,aid,Authors,Title,Journal,Species,int_group,Int_type,Desired_outcome,Actions_taken,Study_goal,Study_location,region,Study_country,Study_duration,Comps.type,Design.type,Study_supplychain,Stated_outcomes,out_group,Outcome,Indicators,Outcome.direction,Outcome_notes)
-    colnames(data) <- c("Article ID","Authors","Title","Journal","Target species","Intervention type","Intervention sub-type","Desired outcome","Actions taken","Goal of study","Location of study","Region of study","Country of study","Duration of study","Comparators used","Study design","Area of supply chain studied","Stated outcomes measured","Outcome type","Outcome sub-type","Indicators used","Direction of outcome","Notes")
+    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,DOI,FullText)
+    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI","Open access?")
     data <- distinct(data)
     DT::datatable(data)
   })
@@ -96,7 +105,7 @@ elink = function(env_serv) with (env_serv, {
   
   output$downloadFullData <- downloadHandler(
     filename = function() {
-      paste(input$region,"_",input$supplychain,"_dataset.csv",sep="")
+      paste(input$region,"_",input$biome,"_dataset.csv",sep="")
     },
     content = function(file) {
       write.csv(dataInputB(), file)
@@ -105,7 +114,7 @@ elink = function(env_serv) with (env_serv, {
   
   output$downloadBiblio <- downloadHandler(
     filename = function() {
-      paste(input$region,"_",input$supplychain,"_biblio.csv",sep="")
+      paste(input$region,"_",input$biome,"_biblio.csv",sep="")
     },
     content = function(file) {
       write.csv(biblio_maptab(), file)
@@ -129,11 +138,17 @@ elink = function(env_serv) with (env_serv, {
   })
   
   ie1 <- reactive({
-    data <- c("PLACEHOLDER")
+    data <- select(dataInputC(),aid,IE)
+    IE <- filter(data,IE == "Y")
+    IE <- distinct(IE)
+    n <- n_distinct(IE$aid)
   })
   
   oa1 <- reactive({
-    data <- c("PLACEHOLDER")
+    data <- select(dataInputC(),aid,FullText)
+    FT <- filter(data, FullText == "Y")
+    FT <- distinct(FT)
+    n <- n_distinct(FT$aid)
   })
   
   output$elink_us <- renderText({
@@ -152,39 +167,125 @@ elink = function(env_serv) with (env_serv, {
 eintout = function(env_serv) with (env_serv,{
   
   ##==========
+  ## Setting dynamic population of drop-down lists
+  ##==========
+  
+  ## Set character classes of inputs
+  regions$COUNTRY <- as.character(as.vector(regions$COUNTRY))
+  regions$REGION <- as.character(as.vector(regions$REGION))
+  regions$CODE <- as.character(as.vector(regions$CODE))
+  regions$SUBREGION <- as.character(as.vector(regions$SUBREGION))
+  
+  biomelabels$mht <- as.character(as.vector(biomelabels$mht))
+  biomelabels$ecoregion <- as.character(as.vector(biomelabels$ecoregion))
+  
+  intlabels$Int_type <- as.character(as.vector(intlabels$Int_type))
+  intlabels$int_group <- as.character(as.vector(intlabels$int_group))
+  
+  ## Set dynamic population
+  observe({
+    eintout_subreg <- if (input$eintout_region == "All") character(0) else{
+      filter(regions, REGION == input$eintout_region) %>%
+        select(SUBREGION) %>%
+        unique()
+    }
+    stillSelected <- isolate(input$eintout_subreg[input$eintout_subreg %in% eintout_subreg])
+    rownames(stillSelected) <- NULL
+    rownames(eintout_subreg) <- NULL
+    updateSelectInput(session,"eintout_subreg", choices=as.vector(eintout_subreg), selected=stillSelected)
+  })
+  
+  observe({
+    eintout_country <- if (input$eintout_subreg == "All") character(0) else{
+      filter(regions, SUBREGION == input$eintout_subreg) %>%
+        select(COUNTRY) %>%
+        unique()
+    }
+    
+    stillSelected <- isolate(input$eintout_country[input$eintout_country %in% eintout_country])
+    rownames(stillSelected) <- NULL
+    rownames(eintout_country) <- NULL
+    updateSelectInput(session, "eintout_country",choice=as.vector(eintout_country), selected=stillSelected)
+  })
+  
+  observe({
+    eintout_ecoreg <- if (input$eintout_mht == "All") character(0) else{
+      filter(biomelabels, mht == input$eintout_mht) %>%
+        select(ecoregion) %>%
+        unique()
+    }
+    stillSelected <- isolate(input$eintout_ecoreg[input$eintout_ecoreg %in% eintout_ecoreg])
+    rownames(stillSelected) <- NULL
+    rownames(eintout_ecoreg) <- NULL
+    updateSelectInput(session,"eintout_ecoreg", choices=as.vector(eintout_ecoreg), selected=stillSelected)
+  })
+  
+  observe({
+    eintout_inttype <- if (input$eintout_intgroup == "All") character(0) else{
+      filter(intlabels, int_group == input$eintout_intgroup) %>%
+        select(Int_type) %>%
+        unique()
+    }
+    stillSelected <- isolate(input$eintout_inttype[input$eintout_inttype %in% eintout_inttype])
+    rownames(stillSelected) <- NULL
+    rownames(eintout_inttype) <- NULL
+    updateSelectInput(session,"eintout_inttype", choices=as.vector(eintout_inttype), selected=stillSelected)
+  })
+  
+  ##==========
   ## Creating reactive data table
   ##==========
+  
+  map_data_final <- map_data_final
+  
   dataInputA <- reactive({
     data <- map_data_final
-    if (input$eintout_int == "all"){
-      sub <- data
+    if (input$eintout_region != "All" & input$eintout_subreg == "" & input$eintout_country == "") {
+      data <- data[data$region == input$eintout_region,]
+    } else if (input$eintout_region != "All" & input$eintout_subreg != "" & input$eintout_country == "") {
+      data <- data[data$subregion == input$eintout_subreg,]
+    } else if (input$eintout_region != "All" & input$eintout_subreg != "" & input$eintout_country != "") {
+      data <- data[data$Study_country == input$eintout_country,]
     } else
-      sub <- data[data$Int_type == input$eintout_int,]
-    sub <- distinct(sub)
+      data <- data
+    distinct(data)
   })
   
   dataInputD <- reactive({
     data <- as.data.frame(dataInputA())
-    if (input$eintout_out == "all"){
-      sub <- data
+    if (input$eintout_mht != "All" & input$eintout_ecoreg == "") {
+      data <- data[data$biome_group == input$eintout_mht,]
+    } else if (input$eintout_region != "All" & input$eintout_ecoreg != "") {
+      data <- data[data$biome_label == input$eintout_ecoreg,]
     } else
-      sub <- data[data$Outcome == input$eintout_out,]
-    sub <- distinct(sub)
+      data <- data
+    distinct(data)
   })
-  
+
   dataInputE <- reactive({
     data <- as.data.frame(dataInputD())
-    if (input$eintout_region == "All"){
+    if (input$eintout_intgroup != "All" & input$eintout_inttype == "") {
+      data <- data[data$int_group == input$eintout_intgroup,]
+    } else if (input$eintout_intgroup != "All" & input$eintout_inttype != "") {
+      data <- data[data$int_labels == input$eintout_inttype,]
+    } else
+      data <- data
+    distinct(data)
+  })
+
+  dataInputF <- reactive({
+    data <- as.data.frame(dataInputE())
+    if (input$eintout_out == "All"){
       sub <- data
     } else
-      sub <- data[data$region == input$eintout_region,]
-    sub <- distinct(sub)
+      sub <- filter(data, Outcome == input$eintout_out)
+      distinct(sub)
   })
   
   output$e_table <- DT::renderDataTable({
-    data <- distinct(dataInputE())
-    data <- select(data,aid,Authors,Title,Journal,Species,int_group,Int_type,Desired_outcome,Actions_taken,Study_goal,Study_location,region,Study_country,Study_duration,Comps.type,Design.type,Study_supplychain,Stated_outcomes,out_group,Outcome,Indicators,Outcome.direction,Outcome_notes)
-    colnames(data) <- c("Article ID","Authors","Title","Journal","Target species","Intervention type","Intervention sub-type","Desired outcome","Actions taken","Goal of study","Location of study","Region of study","Country of study","Duration of study","Comparators used","Study design","Area of supply chain studied","Stated outcomes measured","Outcome type","Outcome sub-type","Indicators used","Direction of outcome","Notes")
+    data <- distinct(dataInputF())
+    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,DOI,FullText)
+    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI","Open access?")
     data <- distinct(data)
     DT::datatable(data)
   })
@@ -194,17 +295,11 @@ eintout = function(env_serv) with (env_serv,{
   ##=========
   
   e_bibl <- reactive({
-    data <- as.data.frame(dataInputE())
-    data <- data %>% select(aid, Pub_type, Authors, Pub_year, Title, Journal, Int_type, Outcome, Outcome.direction, region)
-    data <- distinct(data)
-    colnames(data) <- c("Article ID","Publication type","Authors","Year","Title","Journal","Intervention sub-type","Outcome sub-type","Direction of outcome","Region of study")
-    data <- data
+    data <- as.data.frame(dataInputF())
     
-  })
-  
-  output$e_bib <- DT::renderDataTable({
-    data <- as.data.frame(e_bibl())
-    DT::datatable(distinct(data),escape=FALSE)
+    data <- data %>% select(aid,Pub_type,Authors,Title,Pub_year,Journal,DOI,FullText) %>% distinct()
+    colnames(data) <- c("Article ID", "Publication type","Authors","Title","Year of publication","Journal","DOI","Open access?")
+    data <- distinct(data)
   })
   
   ##==============
@@ -245,7 +340,21 @@ eintout = function(env_serv) with (env_serv,{
   ## Info box summaries
   ##=========
   us2 <- reactive({
-    n <- n_distinct(dataInputE()$aid)
+    n <- n_distinct(dataInputF()$aid)
+  })
+  
+  ie2 <- reactive({
+    data <- select(dataInputF(),aid,IE)
+    IE <- filter(data,IE == "Y")
+    IE <- distinct(IE)
+    n <- n_distinct(IE$aid)
+  })
+  
+  oa2 <- reactive({
+    data <- select(dataInputF(),aid,FullText)
+    FT <- filter(data, FullText == "Y")
+    FT <- distinct(FT)
+    n <- n_distinct(FT$aid)
   })
   
   output$elink_us_2 <- renderText({
@@ -253,11 +362,11 @@ eintout = function(env_serv) with (env_serv,{
   })
   
   output$elink_ie_2 <- renderText({
-    "PLACEHOLDER"
+    as.character(ie2())
   })
   
   output$elink_oa_2 <- renderText({
-    "PLACEHOLDER"
+    as.character(oa2())
   })
   
   ##========
@@ -265,233 +374,267 @@ eintout = function(env_serv) with (env_serv,{
   ##========
   
   output$e_int <- renderPlotly({
-    dat <- as.data.frame(dataInputE())
-    dat <- dat %>% select(aid,int_group,Int_type,Study_supplychain) %>% distinct()
+    dat <- as.data.frame(dataInputF())
     
-    is_counts = matrix(nrow=14, ncol=3)
-    rownames(is_counts) <- int_type
-    colnames(is_counts) <- c("supply","trade","consumer")
-    is_counts <- is_counts
-    
-    for (i in int_type){
-      for (j in c("supply","trade","consumer")){
-        subset <- filter(dat, Study_supplychain == j, Int_type == i)
-        is_counts[i,j] <- n_distinct(subset$aid)
+    if (input$show_subtypes == FALSE){
+      is_counts = matrix(nrow=length(group_type), ncol=2)
+      rownames(is_counts) <- group_type
+      var_type <- group_type
+      for (i in var_type){
+        subset <- filter(data, int_group == i)
+        is_counts[i,1] <- i
+        is_counts[i,2] <- n_distinct(subset$aid)
+      }
+    } else if (input$show_subtypes == TRUE){
+      is_counts = matrix(nrow=length(int_type), ncol=2)
+      rownames(is_counts) <- int_type
+      var_type <- int_type
+      for (i in var_type){
+        subset <- filter(data, Int_type == i)
+        is_counts[i,1] <- i
+        is_counts[i,2] <- n_distinct(subset$aid)
       }
     }
-    
+    colnames(is_counts) <- c("var","count")
     is_counts <- as.data.frame(is_counts)
-    is_counts$Int_type <- rownames(is_counts)
-    rownames(is_counts) <- NULL
-    is_counts1 <- melt(is_counts,id.var="Int_type")
-    is_counts3 <- assignIntGroup(is_counts1)
-    is_counts2 <- assignIntLabel(is_counts3)
-
-    is_counts2$variable <- factor(is_counts2$variable, levels=c("supply","trade","consumer"))
-    is_counts4 <- assignSupLabel(is_counts2)
-    is_counts4$int_group <- factor(is_counts4$int_group, levels=c("Establish/refine laws & policies","Enforcement/compliance","Reduce demand/consumption","Reduce threats to species","Support livelihoods"))
-    is_counts4$int_group_new <- str_wrap(is_counts4$int_group,width=15)
-    is_counts4$int_group_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts4$int_group_new)
-    is_counts4$int_label_new <- str_wrap(is_counts4$int_label,width=25)
-    is_counts4$int_label_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts4$int_label_new)
-    
-    p <- ggplot(is_counts4, aes(x=int_label_new,y=value,fill=supply_label)) + 
-      geom_bar(stat="identity") +
-      theme_bw() +
-      theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12,hjust=-1),axis.text.y=element_text(size=10),strip.text.x=element_text(size=10, face="bold"),strip.background=element_rect(fill="#ffffff",color="#ffffff")) +
-      labs(y="NUMBER OF ARTICLES") +
-      facet_grid(~int_group_new, scales = "free",space="free") +
-      scale_fill_manual(breaks=c("Supply-side","Trade controls","End-market"),values=c("#66c2a5","#fc8d62","#8da0cb")) +
-      guides(fill=guide_legend(title=NULL))
-
-    m=list(l=100,
-           r=25,
-           b=250,
-           t=100,
-           pad=4
-    )
-    
-    ggplotly(p) %>% layout(margin=m)
-    
-  })
-  
-  output$e_out <- renderPlotly({
-    dat <- as.data.frame(dataInputE())
-    dat <- dat %>% select(aid,Outcome,Outcome.direction) %>% distinct()
-    
-    is_counts = matrix(nrow=16, ncol=4)
-    rownames(is_counts) <- out_type
-    colnames(is_counts) <- c("Positive","Negative","Neutral","Mixed")
-    is_counts <- is_counts
-    
-    for (i in out_type){
-      for (j in c("Positive","Negative","Neutral","Mixed")){
-        subset <- filter(dat, Outcome.direction == j, Outcome == i)
-        is_counts[i,j] <- n_distinct(subset$aid)
-      }
+    is_counts$count <- as.numeric(as.vector(is_counts$count))
+    if (input$show_subtypes == FALSE){
+      is_counts$labels <- c("Area protection", "Resource management",  "Land/Water management", "Species management", "Education", "Law & Policy", "Livelihood, economic & other incentives", "External capacity building", "Sustainable use", "Other")
+    } else {
+      is_counts$labels <- c("Area protection", "Area management", "Resource management/protection", "Species control", "Restoration", "Species management", "Species recovery", "Species reintroduction", "Ex-situ conservation", "Formal education", "Training", "Awareness & Communications", "Legislation", "Policies & Regulations", "Private sector standards and codes", "Compliance & enforcement", "Enterprises & livelihood alternatives", "Substitution", "Market-based forces", "Non-monetary values", "Institutional & civil society development", "Alliance & partnership development", "Conservation finance", "Sustainable use", "Other")
     }
     
-    is_counts <- as.data.frame(is_counts)
-    is_counts$Outcome <- rownames(is_counts)
-    rownames(is_counts) <- NULL
-    is_counts1 <- melt(is_counts,id.var="Outcome")
-    is_counts2 <- assignOutGroup(is_counts1)
-    
-    is_counts2$variable <- factor(is_counts2$variable, levels=c("Positive","Negative","Neutral","Mixed"))
-    is_counts2$out_group <- factor(is_counts2$out_group, levels=c("Conservation","Biological","Socio-economic"))
-    is_counts2$out_type_new <- str_wrap(is_counts2$Outcome,width=25)
-    is_counts2$out_type_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts2$out_type_new)
-    
-    p <- ggplot(is_counts2, aes(x=Outcome,y=value,fill=variable)) + 
-      geom_bar(stat="identity") +
-      theme_bw() +
-      theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12,vjust=-1),axis.text.y=element_text(size=10),strip.text.x=element_text(size=10, face="bold"),strip.background=element_rect(fill="#ffffff",color="#ffffff")) +
-      labs(y="NUMBER OF ARTICLES") +
-      facet_grid(~out_group, scales = "free",space="free_x") +
-      scale_fill_manual(breaks=c("Positive","Negative","Neutral","Mixed"),values=c("#35bcad","#f6cb15","#f9f3e7","#de2b37")) +
-      guides(fill=guide_legend(title=NULL))
-    
-    m=list(l=100,
-           r=25,
-           b=250,
-           t=100,
-           pad=4
-    )
-    
-    ggplotly(p) %>% layout(margin=m)
+    plot_ly(x=is_counts$labels, y=is_counts$count ,type="bar") %>%
+      layout(margin = list(b=50,r=20), xaxis=list(tickangle= 45))
   })
+  # output$e_int <- renderPlotly({
+  #   dat <- as.data.frame(dataInputF())
+  #   dat <- dat %>% select(aid,int_group,Int_type) %>% distinct()
+  #   
+  #   is_counts = matrix(nrow=14, ncol=)
+  #   rownames(is_counts) <- int_type
+  #   colnames(is_counts) <- c("supply","trade","consumer")
+  #   is_counts <- is_counts
+  #   
+  #   for (i in int_type){
+  #     for (j in c("supply","trade","consumer")){
+  #       subset <- filter(dat, Study_supplychain == j, Int_type == i)
+  #       is_counts[i,j] <- n_distinct(subset$aid)
+  #     }
+  #   }
+  #   
+  #   is_counts <- as.data.frame(is_counts)
+  #   is_counts$Int_type <- rownames(is_counts)
+  #   rownames(is_counts) <- NULL
+  #   is_counts1 <- melt(is_counts,id.var="Int_type")
+  #   is_counts3 <- assignIntGroup(is_counts1)
+  #   is_counts2 <- assignIntLabel(is_counts3)
+  # 
+  #   is_counts2$variable <- factor(is_counts2$variable, levels=c("supply","trade","consumer"))
+  #   is_counts4 <- assignSupLabel(is_counts2)
+  #   is_counts4$int_group <- factor(is_counts4$int_group, levels=c("Establish/refine laws & policies","Enforcement/compliance","Reduce demand/consumption","Reduce threats to species","Support livelihoods"))
+  #   is_counts4$int_group_new <- str_wrap(is_counts4$int_group,width=15)
+  #   is_counts4$int_group_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts4$int_group_new)
+  #   is_counts4$int_label_new <- str_wrap(is_counts4$int_label,width=25)
+  #   is_counts4$int_label_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts4$int_label_new)
+  #   
+  #   p <- ggplot(is_counts4, aes(x=int_label_new,y=value,fill=supply_label)) + 
+  #     geom_bar(stat="identity") +
+  #     theme_bw() +
+  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12,hjust=-1),axis.text.y=element_text(size=10),strip.text.x=element_text(size=10, face="bold"),strip.background=element_rect(fill="#ffffff",color="#ffffff")) +
+  #     labs(y="NUMBER OF ARTICLES") +
+  #     facet_grid(~int_group_new, scales = "free",space="free") +
+  #     scale_fill_manual(breaks=c("Supply-side","Trade controls","End-market"),values=c("#66c2a5","#fc8d62","#8da0cb")) +
+  #     guides(fill=guide_legend(title=NULL))
+  # 
+  #   m=list(l=100,
+  #          r=25,
+  #          b=250,
+  #          t=100,
+  #          pad=4
+  #   )
+  #   
+  #   ggplotly(p) %>% layout(margin=m)
+  #   
+  # })
   
-  output$e_comp <- renderPlotly({
-    dat <- as.data.frame(dataInputE())
-    dat <- dat %>% select(aid,Comps.type) %>% distinct()
-    colnames(dat) <- c("aid","var")
-    i_counts = matrix(nrow=7, ncol=2)
-    rownames(i_counts) <- comp_type
-    colnames(i_counts) <- c("var","count")
-    
-    for (i in comp_type){
-      subset <- filter(dat, var == i)
-      i_counts[i,1] <- i
-      i_counts[i,2] <- n_distinct(subset$aid)
-    }
-    
-    i_counts <- as.data.frame(i_counts)
-    rownames(i_counts) <- NULL
-    i_counts$count <- as.numeric(as.vector(i_counts$count))
-    i_counts$labels <- comp_type
-    
-    p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-      geom_bar(stat="identity",fill="turquoise") +
-      theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
-      ylab("Number of articles") +
-      xlab("Types of comparators used") 
-    
-    m=list(l=75,
-           b=250,
-           t=50,
-           r=50,
-           pad=4
-    )
-    
-    ggplotly(p) %>% layout(margin=m)
-  })
-  
-  output$e_study <- renderPlotly({
-    dat <- as.data.frame(dataInputE())
-    dat <- dat %>% select(aid,Design.type) %>% distinct()
-    colnames(dat) <- c("aid","var")
-    i_counts = matrix(nrow=4, ncol=2)
-    rownames(i_counts) <- design_type
-    colnames(i_counts) <- c("var","count")
-    
-    for (i in design_type){
-      subset <- filter(dat, var == i)
-      i_counts[i,1] <- i
-      i_counts[i,2] <- n_distinct(subset$aid)
-    }
-    
-    i_counts <- as.data.frame(i_counts)
-    rownames(i_counts) <- NULL
-    i_counts$count <- as.numeric(as.vector(i_counts$count))
-    i_counts$labels <- design_type
-    
-    p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-      geom_bar(stat="identity",fill="turquoise") +
-      theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
-      ylab("Number of articles") +
-      xlab("Type of study design") 
-    
-    m=list(l=75,
-           b=250,
-           t=50,
-           r=50,
-           pad=4
-    )
-    
-    ggplotly(p) %>% layout(margin=m)
-  })  
-
-  output$e_country <- renderPlotly({
-    dat <- as.data.frame(dataInputE())
-    dat <- dat %>% select(aid,Study_country) %>% distinct()
-    i_counts <- count(dat,Study_country)
-    colnames(i_counts) <- c("var","count")
-    i_counts <- as.data.frame(i_counts)
-    rownames(i_counts) <- NULL
-    i_counts$count <- as.numeric(as.vector(i_counts$count))
-    i_counts$labels <- i_counts$var
-    
-    p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-      geom_bar(stat="identity",fill="turquoise") +
-      theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12),axis.text.y=element_text(size=10)) +
-      ylab("Number of articles") +
-      xlab("Country of study") 
-    
-    m=list(l=75,
-           b=250,
-           t=50,
-           r=50,
-           pad=4
-    )
-    
-    ggplotly(p) %>% layout(margin=m)
-  })
-  
-  output$e_purpose <- renderPlotly({
-    dat <- as.data.frame(dataInputE())
-    dat <- dat %>% select(aid,Purpose) %>% distinct()
-    colnames(dat) <- c("aid","var")
-    i_counts = matrix(nrow=9, ncol=2)
-    purpose <- c("clothing","construction","decor","food","fuel","medicine","pet","trophy","other")
-    rownames(i_counts) <- c("clothing","construction","decor","food","fuel","medicine","pet","trophy","other")
-    colnames(i_counts) <- c("var","count")
-    
-    for (i in purpose){
-      subset <- filter(dat, var == i)
-      i_counts[i,1] <- i
-      i_counts[i,2] <- n_distinct(subset$aid)
-    }
-    
-    i_counts <- as.data.frame(i_counts)
-    rownames(i_counts) <- NULL
-    i_counts$count <- as.numeric(as.vector(i_counts$count))
-    i_counts$labels <- c("Clothing","Construction","Decoration","Food","Fuel","Medicine","Pets","Trophy","Other")
-    
-    p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-      geom_bar(stat="identity",fill="turquoise") +
-      theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
-      ylab("Number of articles") +
-      xlab("Part of supply chain studied") 
-    
-    m=list(l=75,
-           b=250,
-           t=50,
-           r=50,
-           pad=4
-    )
-    
-    ggplotly(p) %>% layout(margin=m)
-  })
+  # output$e_out <- renderPlotly({
+  #   dat <- as.data.frame(dataInputE())
+  #   dat <- dat %>% select(aid,Outcome,Outcome.direction) %>% distinct()
+  #   
+  #   is_counts = matrix(nrow=16, ncol=4)
+  #   rownames(is_counts) <- out_type
+  #   colnames(is_counts) <- c("Positive","Negative","Neutral","Mixed")
+  #   is_counts <- is_counts
+  #   
+  #   for (i in out_type){
+  #     for (j in c("Positive","Negative","Neutral","Mixed")){
+  #       subset <- filter(dat, Outcome.direction == j, Outcome == i)
+  #       is_counts[i,j] <- n_distinct(subset$aid)
+  #     }
+  #   }
+  #   
+  #   is_counts <- as.data.frame(is_counts)
+  #   is_counts$Outcome <- rownames(is_counts)
+  #   rownames(is_counts) <- NULL
+  #   is_counts1 <- melt(is_counts,id.var="Outcome")
+  #   is_counts2 <- assignOutGroup(is_counts1)
+  #   
+  #   is_counts2$variable <- factor(is_counts2$variable, levels=c("Positive","Negative","Neutral","Mixed"))
+  #   is_counts2$out_group <- factor(is_counts2$out_group, levels=c("Conservation","Biological","Socio-economic"))
+  #   is_counts2$out_type_new <- str_wrap(is_counts2$Outcome,width=25)
+  #   is_counts2$out_type_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts2$out_type_new)
+  #   
+  #   p <- ggplot(is_counts2, aes(x=Outcome,y=value,fill=variable)) + 
+  #     geom_bar(stat="identity") +
+  #     theme_bw() +
+  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12,vjust=-1),axis.text.y=element_text(size=10),strip.text.x=element_text(size=10, face="bold"),strip.background=element_rect(fill="#ffffff",color="#ffffff")) +
+  #     labs(y="NUMBER OF ARTICLES") +
+  #     facet_grid(~out_group, scales = "free",space="free_x") +
+  #     scale_fill_manual(breaks=c("Positive","Negative","Neutral","Mixed"),values=c("#35bcad","#f6cb15","#f9f3e7","#de2b37")) +
+  #     guides(fill=guide_legend(title=NULL))
+  #   
+  #   m=list(l=100,
+  #          r=25,
+  #          b=250,
+  #          t=100,
+  #          pad=4
+  #   )
+  #   
+  #   ggplotly(p) %>% layout(margin=m)
+  # })
+  # 
+  # output$e_comp <- renderPlotly({
+  #   dat <- as.data.frame(dataInputE())
+  #   dat <- dat %>% select(aid,Comps.type) %>% distinct()
+  #   colnames(dat) <- c("aid","var")
+  #   i_counts = matrix(nrow=7, ncol=2)
+  #   rownames(i_counts) <- comp_type
+  #   colnames(i_counts) <- c("var","count")
+  #   
+  #   for (i in comp_type){
+  #     subset <- filter(dat, var == i)
+  #     i_counts[i,1] <- i
+  #     i_counts[i,2] <- n_distinct(subset$aid)
+  #   }
+  #   
+  #   i_counts <- as.data.frame(i_counts)
+  #   rownames(i_counts) <- NULL
+  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
+  #   i_counts$labels <- comp_type
+  #   
+  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
+  #     geom_bar(stat="identity",fill="turquoise") +
+  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
+  #     ylab("Number of articles") +
+  #     xlab("Types of comparators used") 
+  #   
+  #   m=list(l=75,
+  #          b=250,
+  #          t=50,
+  #          r=50,
+  #          pad=4
+  #   )
+  #   
+  #   ggplotly(p) %>% layout(margin=m)
+  # })
+  # 
+  # output$e_study <- renderPlotly({
+  #   dat <- as.data.frame(dataInputE())
+  #   dat <- dat %>% select(aid,Design.type) %>% distinct()
+  #   colnames(dat) <- c("aid","var")
+  #   i_counts = matrix(nrow=4, ncol=2)
+  #   rownames(i_counts) <- design_type
+  #   colnames(i_counts) <- c("var","count")
+  #   
+  #   for (i in design_type){
+  #     subset <- filter(dat, var == i)
+  #     i_counts[i,1] <- i
+  #     i_counts[i,2] <- n_distinct(subset$aid)
+  #   }
+  #   
+  #   i_counts <- as.data.frame(i_counts)
+  #   rownames(i_counts) <- NULL
+  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
+  #   i_counts$labels <- design_type
+  #   
+  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
+  #     geom_bar(stat="identity",fill="turquoise") +
+  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
+  #     ylab("Number of articles") +
+  #     xlab("Type of study design") 
+  #   
+  #   m=list(l=75,
+  #          b=250,
+  #          t=50,
+  #          r=50,
+  #          pad=4
+  #   )
+  #   
+  #   ggplotly(p) %>% layout(margin=m)
+  # })  
+  # 
+  # output$e_country <- renderPlotly({
+  #   dat <- as.data.frame(dataInputE())
+  #   dat <- dat %>% select(aid,Study_country) %>% distinct()
+  #   i_counts <- count(dat,Study_country)
+  #   colnames(i_counts) <- c("var","count")
+  #   i_counts <- as.data.frame(i_counts)
+  #   rownames(i_counts) <- NULL
+  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
+  #   i_counts$labels <- i_counts$var
+  #   
+  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
+  #     geom_bar(stat="identity",fill="turquoise") +
+  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12),axis.text.y=element_text(size=10)) +
+  #     ylab("Number of articles") +
+  #     xlab("Country of study") 
+  #   
+  #   m=list(l=75,
+  #          b=250,
+  #          t=50,
+  #          r=50,
+  #          pad=4
+  #   )
+  #   
+  #   ggplotly(p) %>% layout(margin=m)
+  # })
+  # 
+  # output$e_purpose <- renderPlotly({
+  #   dat <- as.data.frame(dataInputE())
+  #   dat <- dat %>% select(aid,Purpose) %>% distinct()
+  #   colnames(dat) <- c("aid","var")
+  #   i_counts = matrix(nrow=9, ncol=2)
+  #   purpose <- c("clothing","construction","decor","food","fuel","medicine","pet","trophy","other")
+  #   rownames(i_counts) <- c("clothing","construction","decor","food","fuel","medicine","pet","trophy","other")
+  #   colnames(i_counts) <- c("var","count")
+  #   
+  #   for (i in purpose){
+  #     subset <- filter(dat, var == i)
+  #     i_counts[i,1] <- i
+  #     i_counts[i,2] <- n_distinct(subset$aid)
+  #   }
+  #   
+  #   i_counts <- as.data.frame(i_counts)
+  #   rownames(i_counts) <- NULL
+  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
+  #   i_counts$labels <- c("Clothing","Construction","Decoration","Food","Fuel","Medicine","Pets","Trophy","Other")
+  #   
+  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
+  #     geom_bar(stat="identity",fill="turquoise") +
+  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
+  #     ylab("Number of articles") +
+  #     xlab("Part of supply chain studied") 
+  #   
+  #   m=list(l=75,
+  #          b=250,
+  #          t=50,
+  #          r=50,
+  #          pad=4
+  #   )
+  #   
+  #   ggplotly(p) %>% layout(margin=m)
+  # })
 })
 
 eglob = function(env_serv) with (env_serv,{

@@ -36,7 +36,7 @@ shinyServer(function(input,output,session){
   elink(env_serv)
   eglob(env_serv)
   eintout(env_serv)
-#   ebiom(env_serv)
+# ebiom(env_serv)
   
   code_def <- reactive({
     t <- filter(var.labels,code == as.character(input$code))

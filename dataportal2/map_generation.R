@@ -31,4 +31,14 @@ country_data_final <- select(country_data_final,-aid,-Study_country)
 map_data_final <- select(map_data_final,-region,-subregion)
 map_data_final <- bind_cols(map_data_final,country_data_final)
 
+map_data_final <- map_data_final[c("aid","Pub_type","Authors","Pub_year","Title","Journal","int_group","Int_type","Outcome","Study_country","subregion","region","Biome.","biome_group","IE","study_type","Comps","Comps.type","Comps.time","Design.qual_only","Design.assigned","Design.control","DOI","Title.formatted","Fullcitation","FullText")]
+
+map_data_final$region <- as.character(map_data_final$region)
+map_data_final$biome_group <- as.character(map_data_final$biome_group)
+
+map_data_final[c("region")][is.na(map_data_final[c("region")])] <- c("0")
+
+map_data_final <- assignBiomeLabels(map_data_final,map_data_final2)
+map_data_final <- assignIntLabel(map_data_final,map_data_final2)
+
 saveRDS(map_data_final,file="data/map_data_final.rds")

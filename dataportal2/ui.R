@@ -7,7 +7,7 @@ source("sources.R")
 source("ui_pages.R")
 source("ui_about.R")
 source("ui_explore.R")
-# source("ui_biome.R")
+#source("ui_biome.R")
 
 shinyUI(
   fluidPage(

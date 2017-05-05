@@ -1,0 +1,26 @@
+Int_type,int_group
+Area management,land_wat_mgmt
+Species control,land_wat_mgmt
+Restoration,land_wat_mgmt
+Species management,species_mgmt
+Species recovery,species_mgmt
+Species reintroduction,species_mgmt
+Ex-situ conservation,species_mgmt
+Formal education,education
+Training,education
+Awareness & communication,education
+Legislation,law_policy
+Policies & regulations,law_policy
+Private sector standards & codes,law_policy
+Compliance & enforcement,law_policy
+Enterprises & livelihood alternatives,liv_eco_inc
+Substitution,liv_eco_inc
+Market-based forces,liv_eco_inc
+Non-monetary values,liv_eco_inc
+Institution & civil society development,ext_cap_build
+Alliance & partnership development,ext_cap_build
+Conservation finance,ext_cap_build
+Other,other
+Area protection,area_protect
+Resource management,res_mgmt
+Sustainable use,sus_use

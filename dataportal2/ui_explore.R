@@ -6,15 +6,15 @@ elink = function()
           wellPanel(
             style="background-color:##d5e2ea",
             h4(div(strong("FILTERING OPTIONS"),style="color:#0e2f44")),
-            checkboxGroupInput("region",
+            selectInput("region",
                                label="Choose region(s) to display:",
-                               c("Africa","Asia","Europe","Latin America","Northern America","Oceania","Global","Unknown"),
-                               selected=c("Africa","Asia","Europe","Latin America","Northern America","Oceania","Global","Unknown")
+                               c("All","Africa","Asia","Europe","Latin America","Northern America","Oceania","Global","Unknown"="0"),
+                               selected=c("All")
             ),
-            checkboxGroupInput("supplychain",
-                               label="Choose part(s) of supply chain being studied:",
-                               choices = c("Supply-side" = "supply", "Trade controls" = "trade","End-market" = "consumer"),
-                               selected = c("supply","trade","consumer")
+            selectInput("biome",
+                               label="Choose major habitat type to display:",
+                               choices=list("All"="All","Marine"="MAR","Freshwater"="FRW","Mangroves" ="MAN","Tundra"="TUN","Forests"="FOR","Grasslands"="GRS","Deserts"="DES"),
+                               selected= c("All")
             ),
             h5("Additional viewing options:"),
             checkboxInput("expand",label="Expand intervention groups to specific actions", value=FALSE),
@@ -85,137 +85,179 @@ elink = function()
 
 eintout = function()
   fluidPage(
+    shinyjs::useShinyjs(),
     fluidRow(
       h3(div(strong("EXPLORE THE EVIDENCE MAP"),style="color:#006699"),align="center"),
       hr(),
       br(),
-      h5(div(em("Choose a intervention, outcome and/or region below to display summary tables, data subsets and interactive maps."))),
-      hr(),
-      column(3,
-             selectInput("eintout_region","Region",
-                         c("All regions"="All",
-                           "Africa" = "Africa",
-                           "Asia" = "Asia",
-                           "Latin America & the Caribbean" = "Latin America",
-                           "Oceania" = "Oceania",
-                           "Europe" = "Europe",
-                           "Unknown" = "Unknown",
-                           "Global" = "Global"),
-                         selected="All"
-             )
-      ),
-      column(3,
-             selectInput("eintout_int","Intervention sub-type",
-                         c("All interventions"="all","Laws, regulations & codes" = "laws","Policies & regulations" = "policies","Detection"="detection","Prosecution"="prosecution","Civil action"="civil","Substitution"="substitution","Awareness raising"="awareness","Market-based incentives"="market","Disincentives for illegal behavior"="disincentive","Incentives for stewardship of wildlife"="stewardship","Decrease human-wildlife conflict"="conflict","Spatial areas of protection"="spat_protect","Regulate harvest"="harvest_reg","Culturing of species"="culture"
-                           )
-                         )
-             ),
-      column(3,
-             selectInput("eintout_out","Outcome sub-type", 
-                         c("All outcomes"="all","Management","Protection","Trade","Behavior change","Population","Species","Economic living standards","Material living standards","Health","Education","Social relations","Security and safety","Governance and empowerment","Subjective well-being","Culture & spirituality","Freedom of choice & action"
-                           )
-                         )
-             ),
-      column(3,
-             br(),
-             actionLink("user_reg3",label="Please register to download data"),
-             hr(),
-             uiOutput("download_opts5"),
-             br(),
-             uiOutput("download_opts6"),
-             br()
-             )
+      h5(div(em("Choose filters to display summary tables, data subsets and interactive maps."))),
+      hr()
     ),
     fluidRow(
+      column(2, offset=2,
+             align="center",
+             wellPanel(
+               style="background-color:#c7eae5;",
+               icon("file-text-o","fa-2x"),
+               p(div(strong("TOTAL ARTICLES:"))),
+               h4(div(strong(textOutput("elink_us_2")),style="color:#FF6633"))
+             )
+      ),
+      column(2, offset=1,
+             align="center",
+             wellPanel(
+               style="background-color:#c7eae5;",
+               icon("file-text-o","fa-2x"),
+               p(div(strong("IMPACT EVALS:"))),
+               h4(div(strong(textOutput("elink_ie_2")),style="color:#FF6633"))
+             )
+      ),
+      column(2, offset=1,
+             align="center",
+             wellPanel(
+               style="background-color:#c7eae5;",
+               icon("file-text-o","fa-2x"),
+               p(div(strong("OPEN ACCESS:"))),
+               h4(div(strong(textOutput("elink_oa_2")),style="color:#FF6633"))
+             )
+      )
+    ),
+    fluidRow(
+      hr(),
+      column(4,
+             br(),
+             p("GEOGRAPHIC FILTERS", href="#",style="font-size:12pt"),
+             style = "background-color:#40867a",
+             p("Filter data by region, subregion, and country",style="font-size:9pt"),
+             column(12,
+                    column(6,
+                           selectInput("eintout_region","Region",
+                                       c("All regions"="All",
+                                         "Africa" = "Africa",
+                                         "Asia" = "Asia",
+                                         "Latin America & the Caribbean" = "Latin America",
+                                         "Oceania" = "Oceania",
+                                         "Europe" = "Europe",
+                                         "Unknown" = "Unknown",
+                                         "Global" = "Global"),
+                                       selected="All"
+                           )
+                    ),
+                    column(6,
+                           selectInput("eintout_subreg","Subregion",c("All subregions"="All")
+                           )
+                    )
+             ),
+             column(6, offset=3,
+                    selectInput("eintout_country","Country",c("All countries"="All")
+                    )
+             )
+      ),
+      column(4,
+             br(),
+             p("HABITAT/ECOREGION FILTERS",style="font-size:12pt"),
+             style="background-color:#59BCAB",
+             p("Filter data by major habitat type and/or ecoregions",style="font-size:9pt"),
+             column(12,
+                    column(6,
+                           selectInput("eintout_mht","Major Habitat Type",
+                                       c("All"="All",
+                                         "Marine"="MAR",
+                                         "Freshwater"="FRW",
+                                         "Mangroves" ="MAN",
+                                         "Tundra"="TUN",
+                                         "Forests"="FOR",
+                                         "Grasslands"="GRS",
+                                         "Deserts"="DES"),
+                                       selected="All"
+                           )
+                    ),
+                    column(6,
+                           selectInput("eintout_ecoreg","Ecoregion",c("All ecoregions"="All")
+                           )
+                    )
+             ),
+             column(12,
+                    br(),
+                    actionButton("user_reg3",label="Please register to download data",style="align=center"),
+                    uiOutput("download_opts5"),
+                    uiOutput("download_opts6"),
+                    br()
+                    )
+    ),
+    column(4,
+           br(),
+           style="background-color:#9fe6da",
+           p("ACTION/OUTCOME FILTERS",style="font-size:12pt"),
+           p("Filter by interventions and outcomes",style="font-size:9pt"),
+           column(12,
+                  column(6,
+                         selectInput("eintout_intgroup","Intervention group",
+                                     c("All"="All","Area protection"="area_protect","Resource management"="res_mgmt","Land/Water management"="land_wat_mgmt","Species management"="species_mgmt", "Education & Awareness" = "education", "Law & Policy"="law_policy", "Livelihood, Economic, & Other Incentives"="liv_eco_inc", "External Capacity Building"="ext_cap_build", "Sustainable Use"="sus_use", "Other"="other"),
+                                     selected="All"
+                                     )
+                  ),
+                  column(6,
+                         selectInput("eintout_inttype","Intervention sub-type",
+                                     c("All subtypes"="All")
+                                     )
+                         )
+           ),
+           column(6, offset=3,
+                  selectInput("eintout_out","Outcome sub-type",
+                              c("All"="All","Economic living standards"="eco_liv_std", "Material living standards"="mat_liv_std", "Health"="health", "Education"="education", "Social relations"="soc_rel", "Security & safety"="sec_saf", "Governance & empowerment"="gov", "Subjective well-being"="sub_well", "Culture & spirituality"="culture", "Freedom of choice/action"="free_choice", "Other"="other"),
+                              selected="All"
+                              )
+                  )
+           )
+    ),
+    fluidRow(
+      hr(),
       tabsetPanel(
         type="tabs",
-        tabPanel("Data Summary",
-                 hr(),
+        tabPanel("Dashboard",
                  fluidRow(
-                   h3(div(strong("DATA SUMMARY"),style="color:#006699"),align="center"),
-                   hr()
-                 ),
-                 fluidRow(
-                   column(2, offset=2,
-                          align="center",
+                   column(4,
                           wellPanel(
-                            style="background-color:#c7eae5;",
-                            icon("file-text-o","fa-2x"),
-                            p(div(strong("TOTAL ARTICLES:"))),
-                            h4(div(strong(textOutput("elink_us_2")),style="color:#FF6633"))
-                          )
-                   ),
-                   column(2, offset=1,
-                          align="center",
-                          wellPanel(
-                            style="background-color:#c7eae5;",
-                            icon("file-text-o","fa-2x"),
-                            p(div(strong("IMPACT EVALS:"))),
-                            h4(div(strong(textOutput("elink_ie_2")),style="color:#FF6633"))
-                          )
-                   ),
-                   column(2, offset=1,
-                          align="center",
-                          wellPanel(
-                            style="background-color:#c7eae5;",
-                            icon("file-text-o","fa-2x"),
-                            p(div(strong("OPEN ACCESS:"))),
-                            h4(div(strong(textOutput("elink_oa_2")),style="color:#FF6633"))
-                          )
-                   ),
-                   hr()
-                 ),
-                 fluidRow(
-                   column(12,
-                          wellPanel(
-                            h4(div(em("Type of conservation intervention")),align="center"),                          
-                            plotlyOutput("e_int",height=600)
+                            p(div(em("Type of conservation intervention")),align="center",style="font-size:9pt"),
+                            checkboxInput("show_subtypes",label="Show intervention sub-types",value=FALSE),
+                            plotlyOutput("e_int")
                             ),
-                          br()
-                   )
-                 ),
-                 fluidRow(
-                   column(12,
+                          br(),
                           wellPanel(
-                            h4(div(em("Types of outcome")),align="center"),
-                            plotlyOutput("e_out",height=600)
-                          ),
-                          br()
-                   )
-                  ),
-                 fluidRow(
-                   column(6,
-                          wellPanel(
-                            h4(div(em("Comparators used")),align="center"),
-                            plotlyOutput("e_comp",height=600)
+                            p(div(em("Types of outcome")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_out")
                             ),
                           br()
                    ),
-                   column(6,
+                   column(4,
+                          height=300,
                           wellPanel(
-                            h4(div(em("Type of study design")),align="center"),
-                            plotlyOutput("e_study",height=600)
+                            p(div(em("Comparators used")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_comp",height=125)
+                            ),
+                          br(),
+                          wellPanel(
+                            p(div(em("Type of study design")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_study",height=125)
+                            ),
+                          br()
+                          ),
+                   column(4,
+                          height=300,
+                          wellPanel(
+                            p(div(em("Comparators used")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_comp",height=125)
+                            ),
+                          br(),
+                          wellPanel(
+                            p(div(em("Type of study design")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_study",height=125)
                             ),
                           br()
                           )
-                   ),
-                 fluidRow(
-                   column(6,
-                          wellPanel(
-                            h4(div(em("Countries studied")),align="center"),
-                            plotlyOutput("e_country",height=600)
-                          ),
-                          br()
-                   ),
-                   column(6,
-                          wellPanel(
-                            h4(div(em("Use of target species")),align="center"),
-                            plotlyOutput("e_purpose",height=600)
-                          ),
-                          br()
-                   )
                  )
-                 ),
+        ),
         tabPanel("Data Table",
                  hr(),
                  DT::dataTableOutput("e_table")
