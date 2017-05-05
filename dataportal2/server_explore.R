@@ -12,14 +12,15 @@ elink = function(env_serv) with (env_serv, {
   data <- map_data_final
   
   dataInputB <- reactive({
-    if (input$region != "All"){
-      sub <- data[data$region == input$region,]
+    if (input$region1 != "All"){
+      sub <- data[data$region == input$region1,]
     } else 
       sub <- data
     sub <- distinct(sub)
     })
   
   dataInputB_C <- reactive({
+    data <- dataInputB()
     if (input$comp != "All"){
       sub <- data[data$study_type == input$comp,]
     } else
@@ -123,7 +124,7 @@ elink = function(env_serv) with (env_serv, {
   
   output$downloadFullData <- downloadHandler(
     filename = function() {
-      paste(input$region,"_",input$biome,"_dataset.csv",sep="")
+      paste(input$region1,"_",input$biome,"_dataset.csv",sep="")
     },
     content = function(file) {
       write.csv(dataInputB(), file)
@@ -132,7 +133,7 @@ elink = function(env_serv) with (env_serv, {
   
   output$downloadBiblio <- downloadHandler(
     filename = function() {
-      paste(input$region,"_",input$biome,"_biblio.csv",sep="")
+      paste(input$region1,"_",input$biome,"_biblio.csv",sep="")
     },
     content = function(file) {
       write.csv(biblio_maptab(), file)

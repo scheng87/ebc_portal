@@ -6,7 +6,7 @@ elink = function()
           wellPanel(
             style="background-color:##d5e2ea",
             h4(div(strong("FILTERING OPTIONS"),style="color:#0e2f44")),
-            selectInput("region",
+            selectInput("region1",
                                label="Choose region(s) to display:",
                                c("All","Africa","Asia","Europe","Latin America","Northern America","Oceania","Global","Unknown"="0"),
                                selected=c("All")
