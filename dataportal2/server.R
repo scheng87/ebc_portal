@@ -6,8 +6,8 @@
 source("sources.R")
 source("server_explore.R")
 source("server_pages.R")
-# source("server_about.R")
-# source("server_biome.R")
+source("server_about.R")
+#source("server_biome.R")
 
 shinyServer(function(input,output,session){
   env_serv=environment()
@@ -15,28 +15,27 @@ shinyServer(function(input,output,session){
   ##====BIOME PAGE====##
   ########=======#######
   
-  ##=====Read in shapefiles for WWF terrestrial, freshwater, and marine ecoregions=====##
-#   ter <- readOGR("data/Simplified", layer="wwf_1km")
-#   terr <- data.frame(BIOME=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,98,99),biome_label=c("Tropical/Subtropical Moist Broadleaf Forests","Tropical/Subtropical Dry Broadleaf Forests","Tropical/Subtropical Coniferous Forests","Temperate Broadleaf & Mixed Forests","Temperate Coniferous Forests","Boreal Forests/Taiga","Tropical/Subtropical Grasslands, Savannas, & Shrublands","Temperate Grasslands, Savannas & Shrublands","Flooded Grasslands & Savannas","Montane Grasslands & Shrublands","Tundra","Mediterranean Forests, Woodlands & Scrubs","Deserts & Xeric Shrublands","Mangroves","Unknown","Unidentified"))
-#   ter <- merge(ter,terr,by="BIOME")
-#   ter2 <- subset(ter,ter$BIOME %in% c(1:14))
-#   fre <- readOGR("data/Simplified", layer="FEOW_1km")
-#   mar <- readOGR("data/Simplified", layer="meow_1km")
-#   
-#   ##=====Subset into biomes========##
-#   FOR <- subset(ter,ter$BIOME %in% c(1:6,12))
-#   GRS <- subset(ter,ter$BIOME %in% c(7:10))
-#   DES <- subset(ter,ter$BIOME %in% c(13))
-#   TUN <- subset(ter,ter$BIOME %in% c(11))
-#   MAN <- subset(ter,ter$BIOME %in% c(14))
+#=====Read in shapefiles for WWF terrestrial, freshwater, and marine ecoregions=====##
+  # ter <- readOGR("data/Simplified", layer="wwf_1km")
+  # terr <- data.frame(BIOME=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,98,99),biome_label=c("Tropical/Subtropical Moist Broadleaf Forests","Tropical/Subtropical Dry Broadleaf Forests","Tropical/Subtropical Coniferous Forests","Temperate Broadleaf & Mixed Forests","Temperate Coniferous Forests","Boreal Forests/Taiga","Tropical/Subtropical Grasslands, Savannas, & Shrublands","Temperate Grasslands, Savannas & Shrublands","Flooded Grasslands & Savannas","Montane Grasslands & Shrublands","Tundra","Mediterranean Forests, Woodlands & Scrubs","Deserts & Xeric Shrublands","Mangroves","Unknown","Unidentified"))
+  # ter <- merge(ter,terr,by="BIOME")
+  # ter2 <- subset(ter,ter$BIOME %in% c(1:14))
+  # fre <- readOGR("data/Simplified", layer="FEOW_1km")
+  # mar <- readOGR("data/Simplified", layer="meow_1km")
+  # 
+  # ##=====Subset into biomes========##
+  # FOR <- subset(ter,ter$BIOME %in% c(1:6,12))
+  # GRS <- subset(ter,ter$BIOME %in% c(7:10))
+  # DES <- subset(ter,ter$BIOME %in% c(13))
+  # TUN <- subset(ter,ter$BIOME %in% c(11))
+  # MAN <- subset(ter,ter$BIOME %in% c(14))
   
   startp(env_serv)
-#   adata(env_serv)
-#   elinkexplore(env_serv)
+  adata(env_serv)
+  elinkexplore(env_serv)
   elink(env_serv)
-  eglob(env_serv)
   eintout(env_serv)
-# ebiom(env_serv)
+  #ebiom(env_serv)
   
   code_def <- reactive({
     t <- filter(var.labels,code == as.character(input$code))

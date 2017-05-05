@@ -16,6 +16,11 @@ elink = function()
                                choices=list("All"="All","Marine"="MAR","Freshwater"="FRW","Mangroves" ="MAN","Tundra"="TUN","Forests"="FOR","Grasslands"="GRS","Deserts"="DES"),
                                selected= c("All")
             ),
+            selectInput("comp",
+                        label="Choose a comparison type to display:",
+                        choices=list("All"="All","Before/After, Control/Intervention"="BACI","Before/after"="BA","Change over time"="CT","Comparison group"="CG","Before/After, comparison group"="BACG","Comparison group, control/intervention"="CGCI","No comparator/Unknown"="None"),
+                        selected="All"
+                        ),
             h5("Additional viewing options:"),
             checkboxInput("expand",label="Expand intervention groups to specific actions", value=FALSE),
             br(),
@@ -83,15 +88,26 @@ elink = function()
     )
   )
 
+elinkexplore = function()
+  fluidPage(
+    fluidRow(
+      h3(div(strong("LINKAGE EXPLORER"),style="color:#006699"),align="center"),
+      hr(),
+      h5("This tool is designed to allow you to investigate specific linkages using an interactive heatmap."),
+      h5(div(em("Click on cells within the heatmap to display included literature for that linkage. This will open a new page with links to included literature and options to download specific bibliographies."))),
+      h5(div(em("Click on the intervention or outcome labels to sort the heatmap based on your selection."))),
+      br(),
+      htmlOutput("map_page"),
+      p("This interactive map tool was created by Ian McCullough with assistance from Julien Brun, Mark Schildhauer and Lauren Walker at the National Center for Ecological Analysis and Synthesis (NCEAS).")
+    )
+  )
+
 eintout = function()
   fluidPage(
-    shinyjs::useShinyjs(),
     fluidRow(
       h3(div(strong("EXPLORE THE EVIDENCE MAP"),style="color:#006699"),align="center"),
       hr(),
-      br(),
-      h5(div(em("Choose filters to display summary tables, data subsets and interactive maps."))),
-      hr()
+      h5(div(em("Choose filters to display custom summary tables, datasets, and interactive maps.")))
     ),
     fluidRow(
       column(2, offset=2,
@@ -126,98 +142,112 @@ eintout = function()
       hr(),
       column(4,
              br(),
-             p("GEOGRAPHIC FILTERS", href="#",style="font-size:12pt"),
-             style = "background-color:#40867a",
+             p("GEOGRAPHIC FILTERS",style="font-size:12pt"),
+             style="background-color:#40867a",
              p("Filter data by region, subregion, and country",style="font-size:9pt"),
-             column(12,
-                    column(6,
-                           selectInput("eintout_region","Region",
-                                       c("All regions"="All",
-                                         "Africa" = "Africa",
-                                         "Asia" = "Asia",
-                                         "Latin America & the Caribbean" = "Latin America",
-                                         "Oceania" = "Oceania",
-                                         "Europe" = "Europe",
-                                         "Unknown" = "Unknown",
-                                         "Global" = "Global"),
-                                       selected="All"
-                           )
-                    ),
-                    column(6,
-                           selectInput("eintout_subreg","Subregion",c("All subregions"="All")
-                           )
-                    )
+             fluidRow(
+               column(6,
+                      selectInput("eintout_region","Region",
+                                  c("All regions"="All",
+                                    "Africa" = "Africa",
+                                    "Asia" = "Asia",
+                                    "Latin America & the Caribbean" = "Latin America",
+                                    "Oceania" = "Oceania",
+                                    "Europe" = "Europe",
+                                    "Unknown" = "Unknown",
+                                    "Global" = "Global"),
+                                  selected="All"
+                                  )
+                      ),
+               column(6,
+                      selectInput("eintout_subreg","Subregion",c("All subregions"="All")
+                                  )
+                      )
              ),
-             column(6, offset=3,
-                    selectInput("eintout_country","Country",c("All countries"="All")
-                    )
+             fluidRow(
+               column(6, offset=3,
+                      selectInput("eintout_country","Country",c("All countries"="All")
+                                  )
+                      )
              )
-      ),
+             ),
+      column(4,
+             fluidRow(
+               style="background-color:#59BCAB",
+               column(12,
+                      br(),
+                      p("HABITAT/ECOREGION FILTERS",style="font-size:12pt"),
+                      p("Filter data by major habitat type and/or ecoregions",style="font-size:9pt")
+                      )
+             ),
+             fluidRow(
+               style="background-color:#59BCAB",
+               column(6,
+                      selectInput("eintout_mht","Major Habitat Type",
+                                  c("All"="All",
+                                    "Marine"="MAR",
+                                    "Freshwater"="FRW",
+                                    "Mangroves" ="MAN",
+                                    "Tundra"="TUN",
+                                    "Forests"="FOR",
+                                    "Grasslands"="GRS",
+                                    "Deserts"="DES"),
+                                  selected="All"
+                                  )
+                      ),
+               column(6,
+                      selectInput("eintout_ecoreg","Ecoregion",c("All ecoregions"="All")
+                                  )
+                      )
+             ),
+             fluidRow(
+               style="background-color:#ffffff",
+               column(12,
+                      align="center",
+                      br(),
+                      actionButton("user_reg3",label="Please register to download data",style="align=center"),
+                      uiOutput("download_opts5"),
+                      uiOutput("download_opts6"),
+                      br()
+                      )
+             )
+             ),
       column(4,
              br(),
-             p("HABITAT/ECOREGION FILTERS",style="font-size:12pt"),
-             style="background-color:#59BCAB",
-             p("Filter data by major habitat type and/or ecoregions",style="font-size:9pt"),
-             column(12,
-                    column(6,
-                           selectInput("eintout_mht","Major Habitat Type",
-                                       c("All"="All",
-                                         "Marine"="MAR",
-                                         "Freshwater"="FRW",
-                                         "Mangroves" ="MAN",
-                                         "Tundra"="TUN",
-                                         "Forests"="FOR",
-                                         "Grasslands"="GRS",
-                                         "Deserts"="DES"),
-                                       selected="All"
-                           )
-                    ),
-                    column(6,
-                           selectInput("eintout_ecoreg","Ecoregion",c("All ecoregions"="All")
-                           )
-                    )
+             style="background-color:#9fe6da",
+             p("ACTION/OUTCOME FILTERS",style="font-size:12pt"),
+             p("Filter by interventions and outcomes",style="font-size:9pt"),
+             fluidRow(
+               column(6,
+                      selectInput("eintout_intgroup","Intervention group",
+                                  c("All"="All","Area protection"="area_protect","Resource management"="res_mgmt","Land/Water management"="land_wat_mgmt","Species management"="species_mgmt", "Education & Awareness" = "education", "Law & Policy"="law_policy", "Livelihood, Economic, & Other Incentives"="liv_eco_inc", "External Capacity Building"="ext_cap_build", "Sustainable Use"="sus_use", "Other"="other"),
+                                  selected="All"
+                                  )
+                      ),
+               column(6,
+                      selectInput("eintout_inttype","Intervention sub-type",
+                                  c("All subtypes"="All")
+                                  )
+                      )
              ),
-             column(12,
-                    br(),
-                    actionButton("user_reg3",label="Please register to download data",style="align=center"),
-                    uiOutput("download_opts5"),
-                    uiOutput("download_opts6"),
-                    br()
-                    )
-    ),
-    column(4,
-           br(),
-           style="background-color:#9fe6da",
-           p("ACTION/OUTCOME FILTERS",style="font-size:12pt"),
-           p("Filter by interventions and outcomes",style="font-size:9pt"),
-           column(12,
-                  column(6,
-                         selectInput("eintout_intgroup","Intervention group",
-                                     c("All"="All","Area protection"="area_protect","Resource management"="res_mgmt","Land/Water management"="land_wat_mgmt","Species management"="species_mgmt", "Education & Awareness" = "education", "Law & Policy"="law_policy", "Livelihood, Economic, & Other Incentives"="liv_eco_inc", "External Capacity Building"="ext_cap_build", "Sustainable Use"="sus_use", "Other"="other"),
-                                     selected="All"
-                                     )
-                  ),
-                  column(6,
-                         selectInput("eintout_inttype","Intervention sub-type",
-                                     c("All subtypes"="All")
-                                     )
-                         )
-           ),
-           column(6, offset=3,
-                  selectInput("eintout_out","Outcome sub-type",
-                              c("All"="All","Economic living standards"="eco_liv_std", "Material living standards"="mat_liv_std", "Health"="health", "Education"="education", "Social relations"="soc_rel", "Security & safety"="sec_saf", "Governance & empowerment"="gov", "Subjective well-being"="sub_well", "Culture & spirituality"="culture", "Freedom of choice/action"="free_choice", "Other"="other"),
-                              selected="All"
-                              )
-                  )
-           )
+             fluidRow(
+               column(6, offset=4,
+                      selectInput("eintout_out","Outcome sub-type",
+                                  c("All"="All","Economic living standards"="eco_liv_std", "Material living standards"="mat_liv_std", "Health"="health", "Education"="education", "Social relations"="soc_rel", "Security & safety"="sec_saf", "Governance & empowerment"="gov", "Subjective well-being"="sub_well", "Culture & spirituality"="culture", "Freedom of choice/action"="free_choice", "Other"="other"),
+                                  selected="All"
+                                  )
+                      )
+             )
+             )
     ),
     fluidRow(
       hr(),
       tabsetPanel(
         type="tabs",
-        tabPanel("Dashboard",
+        tabPanel("Data Summary",
+                 hr(),
                  fluidRow(
-                   column(4,
+                   column(6,
                           wellPanel(
                             p(div(em("Type of conservation intervention")),align="center",style="font-size:9pt"),
                             checkboxInput("show_subtypes",label="Show intervention sub-types",value=FALSE),
@@ -227,139 +257,102 @@ eintout = function()
                           wellPanel(
                             p(div(em("Types of outcome")),align="center",style="font-size:9pt"),
                             plotlyOutput("e_out")
-                            ),
-                          br()
-                   ),
-                   column(4,
-                          height=300,
-                          wellPanel(
-                            p(div(em("Comparators used")),align="center",style="font-size:9pt"),
-                            plotlyOutput("e_comp",height=125)
-                            ),
-                          br(),
-                          wellPanel(
-                            p(div(em("Type of study design")),align="center",style="font-size:9pt"),
-                            plotlyOutput("e_study",height=125)
-                            ),
-                          br()
+                          )
                           ),
-                   column(4,
-                          height=300,
+                   column(6,
                           wellPanel(
-                            p(div(em("Comparators used")),align="center",style="font-size:9pt"),
-                            plotlyOutput("e_comp",height=125)
-                            ),
-                          br(),
+                            p(div(em("Study types")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_comp")
+                          ),
                           wellPanel(
-                            p(div(em("Type of study design")),align="center",style="font-size:9pt"),
-                            plotlyOutput("e_study",height=125)
-                            ),
-                          br()
+                            p(div(em("Ecoregions")),align="center",style="font-size:9pt"),
+                            plotlyOutput("e_eco")
+                          )
                           )
                  )
         ),
         tabPanel("Data Table",
                  hr(),
                  DT::dataTableOutput("e_table")
+                 ),
+        tabPanel("Choropleth map",
+                 fluidRow(
+                   column(12,
+                          br(),
+                          h3(div(strong("GLOBAL DISTRIBUTION OF EVIDENCE BASE"),style="color:#006699"),align="center"),
+                          hr(),
+                          plotlyOutput("map_plotly")
+                   )
                  )
-#         tabPanel("Interactive Map",
-#                  fluidRow(
-#                    h5(div(em("Map will only display if a subregion or country are chosen above."))),
-#                    column(8,
-#                           br(),
-#                           h5(div(em("Circle markers on map indicate total number of studies in each country that document the variables chosen on the right. Toggle these markers on and off using the legend to the right."))),
-#                           br(),
-#                           plotlyOutput("regi_map")
-#                           ),
-#                    column(4,
-#                           wellPanel(
-#                             h4(div(em("Choose variable to plot:"))),
-#                             selectInput("eregi_map_type","Show variable group:",choices=c("Intervention types"="int_group","Intervention sub-types"="Int_type","Human well-being outcomes"="Outcome","Major habitat type"="biome_group","Ecoregions/biomes"="Biome."))
-#                           )
-#                    )
-#                  )
-#         )
-        )
-      )
-  )
-
-eglob = function()
-  fluidPage(
-    fluidRow(
-      column(12,
-             checkboxInput('showFiltering',"Show filtering options",FALSE),
-             conditionalPanel(condition='input.showFiltering',
-                              h4(div(strong("FILTERING OPTIONS"),style="color:#006699")),
-                              p("No data for selected parameters indicated in white"),
-                              column(3,
-                                     wellPanel(
-                                       p(em("Filter map by intervention sub-type")),
-                                       checkboxGroupInput("intervention_c","Intervention sub-type",
-                                                          choices=c("Laws, regulations & codes" = "laws","Policies & regulations" = "policies","Detection"="detection","Prosecution"="prosecution","Civil action"="civil","Substitution"="substitution","Awareness raising"="awareness","Market-based incentives"="market","Disincentives for illegal behavior"="disincentive","Incentives for stewardship of wildlife"="stewardship","Decrease human-wildlife conflict"="conflict","Spatial areas of protection"="spat_protect","Regulate harvest"="harvest_reg","Culturing of species"="culture"),
-                                                          selected=c("Laws, regulations & codes" = "laws","Policies & regulations" = "policies","Detection"="detection","Prosecution"="prosecution","Civil action"="civil","Substitution"="substitution","Awareness raising"="awareness","Market-based incentives"="market","Disincentives for illegal behavior"="disincentive","Incentives for stewardship of wildlife"="stewardship","Decrease human-wildlife conflict"="conflict","Spatial areas of protection"="spat_protect","Regulate harvest"="harvest_reg","Culturing of species"="culture")
-                                                          )
-                                       )
-                                     ),
-                              column(3,
-                                     wellPanel(
-                                       p(em("Filter map by outcome sub-type")),
-                                       checkboxGroupInput("outcome_c","Outcome sub-type", 
-                                                          choices=c("Management","Protection","Trade","Behavior change","Population","Species","Economic living standards","Material living standards","Health","Education","Social relations","Security and safety","Governance and empowerment","Subjective well-being","Culture & spirituality","Freedom of choice & action"),
-                                                          selected=c("Management","Protection","Trade","Behavior change","Population","Species","Economic living standards","Material living standards","Health","Education","Social relations","Security and safety","Governance and empowerment","Subjective well-being","Culture & spirituality","Freedom of choice & action")
-                                                          )
-                                       )
-                                     ),
-                              column(3,
-                                     wellPanel(
-                                        p(em("Filter map by part of the supply chain studied")),
-                                        checkboxGroupInput("supplychain_c",
-                                                           label="Choose part(s) of supply chain being studied:",
-                                                           choices = c("Supply-side" = "supply", "Trade controls" = "trade","End-market" = "consumer"),
-                                                           selected = c("supply","trade","consumer")
-                                        )
-                                       )
-                                     ),
-                              column(3,
-                                     wellPanel(
-                                       actionLink("user_reg2",label="Please register to download data"),
-                                       hr(),
-                                       uiOutput("download_opts3"),
-                                       br(),
-                                       uiOutput("download_opts4"),
-                                       br()
-                                       )
-                                     )
-                                )
-               
-      )
-    ),
-    fluidRow(
-      column(12,
-             br(),
-             h3(div(strong("GLOBAL DISTRIBUTION OF EVIDENCE BASE"),style="color:#006699"),align="center"),
-             hr(),
-             plotlyOutput("map_plotly"),
-             hr(),
-             h4(div(em("Included literature"),style="color:#006699"),align="center"),
-             h5("Click on a country on the map to display associated literature below."),
-             hr(),
-             DT::dataTableOutput("biblio_glob")
-             )
+                 ),
+        tabPanel("Interactive map",
+                 p("UPCOMING")
+                 )
       )
     )
-#
-# etime = function()
+  )
+
+# eglob = function()
 #   fluidPage(
-#     theme = shinytheme("flatly"),
 #     fluidRow(
-#       align="center",
-#       h2(div(strong("NATURE AND PEOPLE OVER TIME"),style="color:#006699"),align="center"),
-#       hr(),
-#       h3(em("Global distribution of articles on conservation's impact on human well-being over time")),
-#       plotlyOutput("timemap"),
-#       sliderInput("year1","Publication Year:",min=1990,max=2015,value=1990,step=1,animate=TRUE),
-#       h3(em("Distribution of research on linkages between conservation and human well-being over time")),
-#       plotOutput("timematrix",height=562,width=825),
-#       sliderInput("year2","Publication Year:",min=1990,max=2015,value=1990,step=1,animate=TRUE)
+#       column(12,
+#              checkboxInput('showFiltering',"Show filtering options",FALSE),
+#              conditionalPanel(condition='input.showFiltering',
+#                               h4(div(strong("FILTERING OPTIONS"),style="color:#006699")),
+#                               p("No data for selected parameters indicated in white"),
+#                               column(3,
+#                                      wellPanel(
+#                                        p(em("Filter map by intervention sub-type")),
+#                                        checkboxGroupInput("intervention_c","Intervention sub-type",
+#                                                           choices=c("Laws, regulations & codes" = "laws","Policies & regulations" = "policies","Detection"="detection","Prosecution"="prosecution","Civil action"="civil","Substitution"="substitution","Awareness raising"="awareness","Market-based incentives"="market","Disincentives for illegal behavior"="disincentive","Incentives for stewardship of wildlife"="stewardship","Decrease human-wildlife conflict"="conflict","Spatial areas of protection"="spat_protect","Regulate harvest"="harvest_reg","Culturing of species"="culture"),
+#                                                           selected=c("Laws, regulations & codes" = "laws","Policies & regulations" = "policies","Detection"="detection","Prosecution"="prosecution","Civil action"="civil","Substitution"="substitution","Awareness raising"="awareness","Market-based incentives"="market","Disincentives for illegal behavior"="disincentive","Incentives for stewardship of wildlife"="stewardship","Decrease human-wildlife conflict"="conflict","Spatial areas of protection"="spat_protect","Regulate harvest"="harvest_reg","Culturing of species"="culture")
+#                                                           )
+#                                        )
+#                                      ),
+#                               column(3,
+#                                      wellPanel(
+#                                        p(em("Filter map by outcome sub-type")),
+#                                        checkboxGroupInput("outcome_c","Outcome sub-type", 
+#                                                           choices=c("Management","Protection","Trade","Behavior change","Population","Species","Economic living standards","Material living standards","Health","Education","Social relations","Security and safety","Governance and empowerment","Subjective well-being","Culture & spirituality","Freedom of choice & action"),
+#                                                           selected=c("Management","Protection","Trade","Behavior change","Population","Species","Economic living standards","Material living standards","Health","Education","Social relations","Security and safety","Governance and empowerment","Subjective well-being","Culture & spirituality","Freedom of choice & action")
+#                                                           )
+#                                        )
+#                                      ),
+#                               column(3,
+#                                      wellPanel(
+#                                         p(em("Filter map by part of the supply chain studied")),
+#                                         checkboxGroupInput("supplychain_c",
+#                                                            label="Choose part(s) of supply chain being studied:",
+#                                                            choices = c("Supply-side" = "supply", "Trade controls" = "trade","End-market" = "consumer"),
+#                                                            selected = c("supply","trade","consumer")
+#                                         )
+#                                        )
+#                                      ),
+#                               column(3,
+#                                      wellPanel(
+#                                        actionLink("user_reg2",label="Please register to download data"),
+#                                        hr(),
+#                                        uiOutput("download_opts3"),
+#                                        br(),
+#                                        uiOutput("download_opts4"),
+#                                        br()
+#                                        )
+#                                      )
+#                                 )
+#                
+#       )
+#     ),
+#     fluidRow(
+#       column(12,
+#              br(),
+#              h3(div(strong("GLOBAL DISTRIBUTION OF EVIDENCE BASE"),style="color:#006699"),align="center"),
+#              hr(),
+#              plotlyOutput("map_plotly"),
+#              hr(),
+#              h4(div(em("Included literature"),style="color:#006699"),align="center"),
+#              h5("Click on a country on the map to display associated literature below."),
+#              hr(),
+#              DT::dataTableOutput("biblio_glob")
+#              )
 #       )
 #     )

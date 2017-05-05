@@ -231,4 +231,3 @@ assignBiomeLabels <- function(input,output){
   return(output) 
 }
 
-

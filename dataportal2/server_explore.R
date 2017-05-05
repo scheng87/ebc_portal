@@ -1,3 +1,13 @@
+elinkexplore = function(env_serv) with (env_serv, {
+  page <- ("https://www.nceas.ucsb.edu/~brun/heatmap/heatmap.html")
+  
+  output$map_page <- renderUI({
+    my_test <- tags$iframe(src=page, height=800, width=1300,scrolling="no")
+    print(my_test)
+    my_test
+  })
+})
+
 elink = function(env_serv) with (env_serv, {
   data <- map_data_final
   
@@ -9,8 +19,16 @@ elink = function(env_serv) with (env_serv, {
     sub <- distinct(sub)
     })
   
+  dataInputB_C <- reactive({
+    if (input$comp != "All"){
+      sub <- data[data$study_type == input$comp,]
+    } else
+      sub <- data
+    sub <- distinct(sub)
+  })
+  
   dataInputC <- reactive({
-    data <- dataInputB()
+    data <- dataInputB_C()
     if (input$biome != "All"){
       sub <- data[data$biome_group == input$biome,]
     } else 
@@ -261,7 +279,7 @@ eintout = function(env_serv) with (env_serv,{
       data <- data
     distinct(data)
   })
-
+  
   dataInputE <- reactive({
     data <- as.data.frame(dataInputD())
     if (input$eintout_intgroup != "All" & input$eintout_inttype == "") {
@@ -272,20 +290,20 @@ eintout = function(env_serv) with (env_serv,{
       data <- data
     distinct(data)
   })
-
+  
   dataInputF <- reactive({
     data <- as.data.frame(dataInputE())
     if (input$eintout_out == "All"){
       sub <- data
     } else
       sub <- filter(data, Outcome == input$eintout_out)
-      distinct(sub)
+    distinct(sub)
   })
   
   output$e_table <- DT::renderDataTable({
     data <- distinct(dataInputF())
-    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,DOI,FullText)
-    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI","Open access?")
+    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_location,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,DOI,FullText)
+    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Location of study","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI","Open access?")
     data <- distinct(data)
     DT::datatable(data)
   })
@@ -295,7 +313,7 @@ eintout = function(env_serv) with (env_serv,{
   ##=========
   
   e_bibl <- reactive({
-    data <- as.data.frame(dataInputF())
+    data <- as.data.frame(dataInputA())
     
     data <- data %>% select(aid,Pub_type,Authors,Title,Pub_year,Journal,DOI,FullText) %>% distinct()
     colnames(data) <- c("Article ID", "Publication type","Authors","Title","Year of publication","Journal","DOI","Open access?")
@@ -336,9 +354,9 @@ eintout = function(env_serv) with (env_serv,{
     })
   })
   
-  ##=========
-  ## Info box summaries
-  ##=========
+  #=========
+  # Info box summaries
+  #=========
   us2 <- reactive({
     n <- n_distinct(dataInputF()$aid)
   })
@@ -381,7 +399,7 @@ eintout = function(env_serv) with (env_serv,{
       rownames(is_counts) <- group_type
       var_type <- group_type
       for (i in var_type){
-        subset <- filter(data, int_group == i)
+        subset <- filter(dat, int_group == i)
         is_counts[i,1] <- i
         is_counts[i,2] <- n_distinct(subset$aid)
       }
@@ -390,7 +408,7 @@ eintout = function(env_serv) with (env_serv,{
       rownames(is_counts) <- int_type
       var_type <- int_type
       for (i in var_type){
-        subset <- filter(data, Int_type == i)
+        subset <- filter(dat, Int_type == i)
         is_counts[i,1] <- i
         is_counts[i,2] <- n_distinct(subset$aid)
       }
@@ -405,260 +423,79 @@ eintout = function(env_serv) with (env_serv,{
     }
     
     plot_ly(x=is_counts$labels, y=is_counts$count ,type="bar") %>%
-      layout(margin = list(b=50,r=20), xaxis=list(tickangle= 45))
+      layout(margin = list(b=200,r=50), xaxis=list(tickangle= 45))
   })
-  # output$e_int <- renderPlotly({
-  #   dat <- as.data.frame(dataInputF())
-  #   dat <- dat %>% select(aid,int_group,Int_type) %>% distinct()
-  #   
-  #   is_counts = matrix(nrow=14, ncol=)
-  #   rownames(is_counts) <- int_type
-  #   colnames(is_counts) <- c("supply","trade","consumer")
-  #   is_counts <- is_counts
-  #   
-  #   for (i in int_type){
-  #     for (j in c("supply","trade","consumer")){
-  #       subset <- filter(dat, Study_supplychain == j, Int_type == i)
-  #       is_counts[i,j] <- n_distinct(subset$aid)
-  #     }
-  #   }
-  #   
-  #   is_counts <- as.data.frame(is_counts)
-  #   is_counts$Int_type <- rownames(is_counts)
-  #   rownames(is_counts) <- NULL
-  #   is_counts1 <- melt(is_counts,id.var="Int_type")
-  #   is_counts3 <- assignIntGroup(is_counts1)
-  #   is_counts2 <- assignIntLabel(is_counts3)
-  # 
-  #   is_counts2$variable <- factor(is_counts2$variable, levels=c("supply","trade","consumer"))
-  #   is_counts4 <- assignSupLabel(is_counts2)
-  #   is_counts4$int_group <- factor(is_counts4$int_group, levels=c("Establish/refine laws & policies","Enforcement/compliance","Reduce demand/consumption","Reduce threats to species","Support livelihoods"))
-  #   is_counts4$int_group_new <- str_wrap(is_counts4$int_group,width=15)
-  #   is_counts4$int_group_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts4$int_group_new)
-  #   is_counts4$int_label_new <- str_wrap(is_counts4$int_label,width=25)
-  #   is_counts4$int_label_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts4$int_label_new)
-  #   
-  #   p <- ggplot(is_counts4, aes(x=int_label_new,y=value,fill=supply_label)) + 
-  #     geom_bar(stat="identity") +
-  #     theme_bw() +
-  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12,hjust=-1),axis.text.y=element_text(size=10),strip.text.x=element_text(size=10, face="bold"),strip.background=element_rect(fill="#ffffff",color="#ffffff")) +
-  #     labs(y="NUMBER OF ARTICLES") +
-  #     facet_grid(~int_group_new, scales = "free",space="free") +
-  #     scale_fill_manual(breaks=c("Supply-side","Trade controls","End-market"),values=c("#66c2a5","#fc8d62","#8da0cb")) +
-  #     guides(fill=guide_legend(title=NULL))
-  # 
-  #   m=list(l=100,
-  #          r=25,
-  #          b=250,
-  #          t=100,
-  #          pad=4
-  #   )
-  #   
-  #   ggplotly(p) %>% layout(margin=m)
-  #   
-  # })
   
-  # output$e_out <- renderPlotly({
-  #   dat <- as.data.frame(dataInputE())
-  #   dat <- dat %>% select(aid,Outcome,Outcome.direction) %>% distinct()
-  #   
-  #   is_counts = matrix(nrow=16, ncol=4)
-  #   rownames(is_counts) <- out_type
-  #   colnames(is_counts) <- c("Positive","Negative","Neutral","Mixed")
-  #   is_counts <- is_counts
-  #   
-  #   for (i in out_type){
-  #     for (j in c("Positive","Negative","Neutral","Mixed")){
-  #       subset <- filter(dat, Outcome.direction == j, Outcome == i)
-  #       is_counts[i,j] <- n_distinct(subset$aid)
-  #     }
-  #   }
-  #   
-  #   is_counts <- as.data.frame(is_counts)
-  #   is_counts$Outcome <- rownames(is_counts)
-  #   rownames(is_counts) <- NULL
-  #   is_counts1 <- melt(is_counts,id.var="Outcome")
-  #   is_counts2 <- assignOutGroup(is_counts1)
-  #   
-  #   is_counts2$variable <- factor(is_counts2$variable, levels=c("Positive","Negative","Neutral","Mixed"))
-  #   is_counts2$out_group <- factor(is_counts2$out_group, levels=c("Conservation","Biological","Socio-economic"))
-  #   is_counts2$out_type_new <- str_wrap(is_counts2$Outcome,width=25)
-  #   is_counts2$out_type_new <- gsub(pattern = "\n", replacement = "\n<br>", is_counts2$out_type_new)
-  #   
-  #   p <- ggplot(is_counts2, aes(x=Outcome,y=value,fill=variable)) + 
-  #     geom_bar(stat="identity") +
-  #     theme_bw() +
-  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12,vjust=-1),axis.text.y=element_text(size=10),strip.text.x=element_text(size=10, face="bold"),strip.background=element_rect(fill="#ffffff",color="#ffffff")) +
-  #     labs(y="NUMBER OF ARTICLES") +
-  #     facet_grid(~out_group, scales = "free",space="free_x") +
-  #     scale_fill_manual(breaks=c("Positive","Negative","Neutral","Mixed"),values=c("#35bcad","#f6cb15","#f9f3e7","#de2b37")) +
-  #     guides(fill=guide_legend(title=NULL))
-  #   
-  #   m=list(l=100,
-  #          r=25,
-  #          b=250,
-  #          t=100,
-  #          pad=4
-  #   )
-  #   
-  #   ggplotly(p) %>% layout(margin=m)
-  # })
-  # 
-  # output$e_comp <- renderPlotly({
-  #   dat <- as.data.frame(dataInputE())
-  #   dat <- dat %>% select(aid,Comps.type) %>% distinct()
-  #   colnames(dat) <- c("aid","var")
-  #   i_counts = matrix(nrow=7, ncol=2)
-  #   rownames(i_counts) <- comp_type
-  #   colnames(i_counts) <- c("var","count")
-  #   
-  #   for (i in comp_type){
-  #     subset <- filter(dat, var == i)
-  #     i_counts[i,1] <- i
-  #     i_counts[i,2] <- n_distinct(subset$aid)
-  #   }
-  #   
-  #   i_counts <- as.data.frame(i_counts)
-  #   rownames(i_counts) <- NULL
-  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
-  #   i_counts$labels <- comp_type
-  #   
-  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-  #     geom_bar(stat="identity",fill="turquoise") +
-  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
-  #     ylab("Number of articles") +
-  #     xlab("Types of comparators used") 
-  #   
-  #   m=list(l=75,
-  #          b=250,
-  #          t=50,
-  #          r=50,
-  #          pad=4
-  #   )
-  #   
-  #   ggplotly(p) %>% layout(margin=m)
-  # })
-  # 
-  # output$e_study <- renderPlotly({
-  #   dat <- as.data.frame(dataInputE())
-  #   dat <- dat %>% select(aid,Design.type) %>% distinct()
-  #   colnames(dat) <- c("aid","var")
-  #   i_counts = matrix(nrow=4, ncol=2)
-  #   rownames(i_counts) <- design_type
-  #   colnames(i_counts) <- c("var","count")
-  #   
-  #   for (i in design_type){
-  #     subset <- filter(dat, var == i)
-  #     i_counts[i,1] <- i
-  #     i_counts[i,2] <- n_distinct(subset$aid)
-  #   }
-  #   
-  #   i_counts <- as.data.frame(i_counts)
-  #   rownames(i_counts) <- NULL
-  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
-  #   i_counts$labels <- design_type
-  #   
-  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-  #     geom_bar(stat="identity",fill="turquoise") +
-  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
-  #     ylab("Number of articles") +
-  #     xlab("Type of study design") 
-  #   
-  #   m=list(l=75,
-  #          b=250,
-  #          t=50,
-  #          r=50,
-  #          pad=4
-  #   )
-  #   
-  #   ggplotly(p) %>% layout(margin=m)
-  # })  
-  # 
-  # output$e_country <- renderPlotly({
-  #   dat <- as.data.frame(dataInputE())
-  #   dat <- dat %>% select(aid,Study_country) %>% distinct()
-  #   i_counts <- count(dat,Study_country)
-  #   colnames(i_counts) <- c("var","count")
-  #   i_counts <- as.data.frame(i_counts)
-  #   rownames(i_counts) <- NULL
-  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
-  #   i_counts$labels <- i_counts$var
-  #   
-  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-  #     geom_bar(stat="identity",fill="turquoise") +
-  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=10),axis.title.x = element_blank(),axis.title.y = element_text(size=12),axis.text.y=element_text(size=10)) +
-  #     ylab("Number of articles") +
-  #     xlab("Country of study") 
-  #   
-  #   m=list(l=75,
-  #          b=250,
-  #          t=50,
-  #          r=50,
-  #          pad=4
-  #   )
-  #   
-  #   ggplotly(p) %>% layout(margin=m)
-  # })
-  # 
-  # output$e_purpose <- renderPlotly({
-  #   dat <- as.data.frame(dataInputE())
-  #   dat <- dat %>% select(aid,Purpose) %>% distinct()
-  #   colnames(dat) <- c("aid","var")
-  #   i_counts = matrix(nrow=9, ncol=2)
-  #   purpose <- c("clothing","construction","decor","food","fuel","medicine","pet","trophy","other")
-  #   rownames(i_counts) <- c("clothing","construction","decor","food","fuel","medicine","pet","trophy","other")
-  #   colnames(i_counts) <- c("var","count")
-  #   
-  #   for (i in purpose){
-  #     subset <- filter(dat, var == i)
-  #     i_counts[i,1] <- i
-  #     i_counts[i,2] <- n_distinct(subset$aid)
-  #   }
-  #   
-  #   i_counts <- as.data.frame(i_counts)
-  #   rownames(i_counts) <- NULL
-  #   i_counts$count <- as.numeric(as.vector(i_counts$count))
-  #   i_counts$labels <- c("Clothing","Construction","Decoration","Food","Fuel","Medicine","Pets","Trophy","Other")
-  #   
-  #   p <- ggplot(data=i_counts, aes(x=labels,y=count)) +
-  #     geom_bar(stat="identity",fill="turquoise") +
-  #     theme(axis.text.x = element_text(angle=45,hjust=1,size=8),axis.title.x = element_blank(),axis.title.y = element_text(size=10),axis.text.y=element_text(size=8)) +
-  #     ylab("Number of articles") +
-  #     xlab("Part of supply chain studied") 
-  #   
-  #   m=list(l=75,
-  #          b=250,
-  #          t=50,
-  #          r=50,
-  #          pad=4
-  #   )
-  #   
-  #   ggplotly(p) %>% layout(margin=m)
-  # })
-})
+  output$e_out <- renderPlotly({
+    dat <- as.data.frame(dataInputF())
 
-eglob = function(env_serv) with (env_serv,{
-  data <- map_data_final
-  
-  dataInputX <- reactive({
-    df <- data[data$Study_supplychain %in% input$supplychain_c,]
-    df <- distinct(df)
+    io_counts = matrix(nrow=length(out_type), ncol=2)
+    rownames(io_counts) <- out_type
+    var_type <- out_type
+    for (i in var_type){
+      subset <- filter(dat, Outcome == i)
+      io_counts[i,1] <- i
+      io_counts[i,2] <- n_distinct(subset$aid)
+      }
+
+    colnames(io_counts) <- c("var","count")
+    io_counts <- as.data.frame(io_counts)
+    io_counts$count <- as.numeric(as.vector(io_counts$count))
+    io_counts$labels <- c(out_labels)
+
+    plot_ly(x=io_counts$labels, y=io_counts$count ,type="bar") %>%
+      layout(margin = list(b=200,r=75), xaxis=list(tickangle= 45))
+  })
+
+  output$e_comp <- renderPlotly({
+    dat <- as.data.frame(dataInputF())
+
+    ic_counts = matrix(nrow=length(study_types), ncol=2)
+    rownames(ic_counts) <- study_types
+    var_type <- study_types
+    for (i in var_type){
+      subset <- filter(dat, study_type == i)
+      ic_counts[i,1] <- i
+      ic_counts[i,2] <- n_distinct(subset$aid)
+    }
+
+    colnames(ic_counts) <- c("var","count")
+    ic_counts <- as.data.frame(ic_counts)
+    ic_counts$count <- as.numeric(as.vector(ic_counts$count))
+    ic_counts$labels <- c(study_labels)
+
+    plot_ly(x=ic_counts$labels, y=ic_counts$count ,type="bar") %>%
+      layout(margin = list(b=200,r=50), xaxis=list(tickangle= 45))
+  })
+
+  output$e_eco <- renderPlotly({
+    dat <- as.data.frame(dataInputF())
+
+    ib_counts = matrix(nrow=length(biome_type), ncol=2)
+    rownames(ib_counts) <- biome_type
+    var_type <- biome_type
+
+    for (i in var_type){
+      subset <- filter(dat, Biome. == i)
+      ib_counts[i,1] <- i
+      ib_counts[i,2] <- n_distinct(subset$aid)
+    }
+
+    colnames(ib_counts) <- c("var","count")
+    ib_counts <- as.data.frame(ib_counts)
+    ib_counts$count <- as.numeric(as.vector(ib_counts$count))
+    ib_counts$labels <- c(biome_labels)
+
+    plot_ly(x=ib_counts$labels, y=ib_counts$count ,type="bar") %>%
+      layout(margin = list(b=200,r=50), xaxis=list(tickangle= 45))
   })
   
-  dataInputY <- reactive({
-    data <- as.data.frame(dataInputX())
-    df <- data[data$Int_type %in% input$intervention_c,]
-    df <- distinct(df)
-  })
-  
-  dataInputZ <- reactive({
-    data <- as.data.frame(dataInputY())
-    df <- data[data$Outcome %in% input$outcome_c,]
-    df <- distinct(df)
-  })
+  ##========
+  ## Prepping for mapping
+  ##========
   
   country_dat <- reactive({
-    dat <- as.data.frame(dataInputZ())
+    dat <- as.data.frame(dataInputF())
     regions <- read.csv("data/country_list_all.csv", head=TRUE, sep=",")
     names(regions) <- c("Study_country", "Region", "Code","Subregion","Point")
     
@@ -679,102 +516,179 @@ eglob = function(env_serv) with (env_serv,{
     country_count <- filter(country_count,Code != "")
     country_count <- as.data.frame(country_count)
   })
+  
+  #===================
+  # Plotting interactive map with plotly
+  #===================
+  
+  output$map_plotly <- renderPlotly({
+    country_count <- as.data.frame(country_dat())
+    country_count$counts <- as.numeric(as.vector(country_count$counts))
+    
+    l <- list(color = toRGB("grey"), width = 0.5)
+    g <- list(
+      showframe = FALSE,
+      resolution=50,
+      projection = list(type = 'Mercator'),
+      showcoastlines = T,
+      showcountries = T,
+      countrycolor = toRGB("white"),
+      coastlinecolor = toRGB("white")
+    )
+    
+    col <- colorRampPalette(c("white", "#74c476","#41ab5d", "#238b45", "#006d2c", "#00441b")) (200)
+    
+    p <- plot_geo(country_count) %>%
+      add_trace(z=~counts, locations = ~Code, 
+                 text = ~Study_country, color = ~counts, colors=col, marker=list(line=l)
+                ) %>%
+      colorbar(title="No. of unique articles") %>%
+      layout(
+        geo = g
+      )
 
-#===================
-# Plotting interactive map with plotly
-#===================
-
-output$map_plotly <- renderPlotly({
-  country_count <- as.data.frame(country_dat())
-  country_count$counts <- as.numeric(as.vector(country_count$counts))
-  
-  l <- list(color = toRGB("grey"), width = 0.5)
-  g <- list(
-    showframe = FALSE,
-    resolution=50,
-    projection = list(type = 'Mercator'),
-    showcoastlines = T,
-    showcountries = T,
-    countrycolor = toRGB("white"),
-    coastlinecolor = toRGB("white")
-  )
-  
-  col <- colorRampPalette(c("white", "#74c476","#41ab5d", "#238b45", "#006d2c", "#00441b")) (200)
-  
-  p <- plot_ly(country_count, z=counts, type = 'choropleth', locations = Code, 
-          text = Study_country, color = counts, colors=col, marker=list(line=l), 
-          colorbar = list(title="No. of unique articles"))
-  
-  layout(p, geo = g)
-})
-
-country_click <- reactive({
-  
-  all <- read.csv("data/country_list_all.csv", head=TRUE, sep=",")
-  names(all) <- c("Study_country", "Region", "Code","Subregion","Point")
-   
-  d <- plotly::event_data("plotly_click", source="poop")
-  if (is.null(d)){
-    country <- as.data.frame("none")
-  } else country <- filter(all,Point == as.integer(d[2]))
-  country <- as.character(country[1,1])
-  return(country)
-})
-  
-  biblio_countrytab <- reactive({
-    data <- dataInputZ()
-    data <- data %>% select(aid) %>% distinct()
-    bib <- left_join(data,map_data_final,by="aid")
-    bib <- bib %>% select(aid,Study_country,biome_group,Pub_type,Authors,Title,Pub_year,DOI,Journal,FullText) %>% distinct()
-    colnames(bib) <- c("Article ID", "Publication type","Authors","Title","Year of publication","DOI","Journal","Open Access")
-    bib <- bib
   })
-
-  output$biblio_glob <- DT::renderDataTable({
-    data <- as.data.frame(dataInputZ())
-    click <- as.character(country_click())
-    if (click != "none"){
-      sub <- filter(data,Study_country == click)
-      bib <- sub %>% select(aid,Study_country,Pub_type,Authors,Title,Pub_year,DOI,Journal) %>% distinct()
-      colnames(bib) <- c("Article ID", "Study_country","Publication type","Authors","Title","Year of publication","DOI","Journal")
-      DT::datatable(distinct(bib),escape=FALSE)
-    } else if (click == "none"){
-      bib <- matrix(nrow=1,ncol=8)
-      colnames(bib) <- c("Article ID", "Study_country","Publication type","Authors","Title","Year of publication","DOI","Journal")
-      DT::datatable(distinct(as.data.frame(bib),escape=FALSE))
-    }
-  })
-
-  output$downloadFullDataC <- downloadHandler(
-    filename = function() {
-      paste(input$intervention_c,"_",input$outcome_c,"_",input$supplychain_c,"_dataset.csv",sep="")
-    },
-    content = function(file) {
-      write.csv(dataInputZ(), file)
-    }
-  )
   
-  output$downloadBiblioC <- downloadHandler(
-    filename = function() {
-      paste(input$intervention_c,"_",input$outcome_c,"_",input$supplychain_c,"_biblio.csv",sep="")
-    },
-    content = function(file) {
-      write.csv(biblio_countrytab(), file)
-    }
-  )
-
-observeEvent(input$submit, {
-  output$download_opts3 <- renderUI({
-    downloadButton("downloadBiblioC", "Bibliography as .csv")
-  })
 })
 
-observeEvent(input$submit, {
-  output$download_opts4 <- renderUI({
-    downloadButton("downloadFullDataC", "Data as .csv")
-  })
-})
-})
+# eglob = function(env_serv) with (env_serv,{
+#   data <- map_data_final
+#   
+#   dataInputX <- reactive({
+#     df <- data[data$Study_supplychain %in% input$supplychain_c,]
+#     df <- distinct(df)
+#   })
+#   
+#   dataInputY <- reactive({
+#     data <- as.data.frame(dataInputX())
+#     df <- data[data$Int_type %in% input$intervention_c,]
+#     df <- distinct(df)
+#   })
+#   
+#   dataInputZ <- reactive({
+#     data <- as.data.frame(dataInputY())
+#     df <- data[data$Outcome %in% input$outcome_c,]
+#     df <- distinct(df)
+#   })
+#   
+#   country_dat <- reactive({
+#     dat <- as.data.frame(dataInputZ())
+#     regions <- read.csv("data/country_list_all.csv", head=TRUE, sep=",")
+#     names(regions) <- c("Study_country", "Region", "Code","Subregion","Point")
+#     
+#     ##Count number of studies for all countries and arrange by region
+#     country_count <- matrix(nrow=nrow(regions), ncol=2)
+#     rownames(country_count) <- regions$Study_country
+#     colnames(country_count) <- c("Study_country", "counts")
+#     #Calculate in for loop and write to blank matrix
+#     for (c in regions$Study_country){
+#       subset <- filter(dat, Study_country == c)
+#       country_count[c,1] <- c
+#       country_count[c,2] <- as.numeric(n_distinct(subset$aid))
+#     }
+#     
+#     rownames(country_count) = NULL
+#     country_count <- as.data.frame(country_count)
+#     country_count <- inner_join(country_count,regions,by="Study_country")
+#     country_count <- filter(country_count,Code != "")
+#     country_count <- as.data.frame(country_count)
+#   })
+# 
+# #===================
+# # Plotting interactive map with plotly
+# #===================
+# 
+# output$map_plotly <- renderPlotly({
+#   country_count <- as.data.frame(country_dat())
+#   country_count$counts <- as.numeric(as.vector(country_count$counts))
+#   
+#   l <- list(color = toRGB("grey"), width = 0.5)
+#   g <- list(
+#     showframe = FALSE,
+#     resolution=50,
+#     projection = list(type = 'Mercator'),
+#     showcoastlines = T,
+#     showcountries = T,
+#     countrycolor = toRGB("white"),
+#     coastlinecolor = toRGB("white")
+#   )
+#   
+#   col <- colorRampPalette(c("white", "#74c476","#41ab5d", "#238b45", "#006d2c", "#00441b")) (200)
+#   
+#   p <- plot_ly(country_count, z=counts, type = 'choropleth', locations = Code, 
+#           text = Study_country, color = counts, colors=col, marker=list(line=l), 
+#           colorbar = list(title="No. of unique articles"))
+#   
+#   layout(p, geo = g)
+# })
+# 
+# country_click <- reactive({
+#   
+#   all <- read.csv("data/country_list_all.csv", head=TRUE, sep=",")
+#   names(all) <- c("Study_country", "Region", "Code","Subregion","Point")
+#    
+#   d <- plotly::event_data("plotly_click", source="poop")
+#   if (is.null(d)){
+#     country <- as.data.frame("none")
+#   } else country <- filter(all,Point == as.integer(d[2]))
+#   country <- as.character(country[1,1])
+#   return(country)
+# })
+#   
+#   biblio_countrytab <- reactive({
+#     data <- dataInputZ()
+#     data <- data %>% select(aid) %>% distinct()
+#     bib <- left_join(data,map_data_final,by="aid")
+#     bib <- bib %>% select(aid,Study_country,biome_group,Pub_type,Authors,Title,Pub_year,DOI,Journal,FullText) %>% distinct()
+#     colnames(bib) <- c("Article ID", "Publication type","Authors","Title","Year of publication","DOI","Journal","Open Access")
+#     bib <- bib
+#   })
+# 
+#   output$biblio_glob <- DT::renderDataTable({
+#     data <- as.data.frame(dataInputZ())
+#     click <- as.character(country_click())
+#     if (click != "none"){
+#       sub <- filter(data,Study_country == click)
+#       bib <- sub %>% select(aid,Study_country,Pub_type,Authors,Title,Pub_year,DOI,Journal) %>% distinct()
+#       colnames(bib) <- c("Article ID", "Study_country","Publication type","Authors","Title","Year of publication","DOI","Journal")
+#       DT::datatable(distinct(bib),escape=FALSE)
+#     } else if (click == "none"){
+#       bib <- matrix(nrow=1,ncol=8)
+#       colnames(bib) <- c("Article ID", "Study_country","Publication type","Authors","Title","Year of publication","DOI","Journal")
+#       DT::datatable(distinct(as.data.frame(bib),escape=FALSE))
+#     }
+#   })
+# 
+#   output$downloadFullDataC <- downloadHandler(
+#     filename = function() {
+#       paste(input$intervention_c,"_",input$outcome_c,"_",input$supplychain_c,"_dataset.csv",sep="")
+#     },
+#     content = function(file) {
+#       write.csv(dataInputZ(), file)
+#     }
+#   )
+#   
+#   output$downloadBiblioC <- downloadHandler(
+#     filename = function() {
+#       paste(input$intervention_c,"_",input$outcome_c,"_",input$supplychain_c,"_biblio.csv",sep="")
+#     },
+#     content = function(file) {
+#       write.csv(biblio_countrytab(), file)
+#     }
+#   )
+# 
+# observeEvent(input$submit, {
+#   output$download_opts3 <- renderUI({
+#     downloadButton("downloadBiblioC", "Bibliography as .csv")
+#   })
+# })
+# 
+# observeEvent(input$submit, {
+#   output$download_opts4 <- renderUI({
+#     downloadButton("downloadFullDataC", "Data as .csv")
+#   })
+# })
+# })
 
 
 # etime = function(env_serv) with (env_serv,{

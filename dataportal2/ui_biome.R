@@ -1,6 +1,5 @@
 ebiom = function()
   fluidPage(
-    theme = shinytheme("flatly"),
     tags$head(
       tags$style(HTML("#ter{background-image:url('forest.jpg');background-repeat: no-repeat;width:400px;height:150px")),
       tags$style(HTML("#mar{background-image:url('marine.jpg');background-repeat: no-repeat;width:400px;height:150px")),

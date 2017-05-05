@@ -48,7 +48,7 @@ intlabels <- read.csv("data/int_labels.csv",header=TRUE)
 
 impl_type <- c("Academic","Public sector","Research institute","Consultant","Non-profit","Private sector/industry","International Convention")
 design_type <- c("Experimental","Quasi experimental","Non-experimental","Systematic review")
-comp_type <- c("Control-intervention site comparisons","Before-after","Spatial comparator","Interrupted time series","Continuous time series","Group comparators between populations of people, ecosystems or species","Presence/absence of intervention")
+comp_type <- c("Control-intervention site comparisons","Before-after","Spatial comparator","Interrupted time series","Continuous time series","Group comparators (e.g. cultural/ethnic, demographic, socio-economic, users)","Presence/absence of intervention","Projects")
 int_type = c("area_protect", "area_mgmt", "res_mgmt", "sp_control", "restoration", "sp_mgmt", "sp_recov", "sp_reint", "ex_situ", "form_ed", "training", "aware_comm", "legis", "pol_reg", "priv_codes", "compl_enfor", "liv_alt", "sub", "market", "non_mon", "inst_civ_dev", "part_dev", "cons_fin", "sus_use", "other")
 group_type = c("area_protect", "res_mgmt", "land_wat_mgmt", "species_mgmt", "education", "law_policy", "liv_eco_inc", "ext_cap_build", "sus_use", "other")
 out_type = c("mat_liv_std", "eco_liv_std", "health", "education", "soc_rel", "sec_saf", "gov", "sub_well", "culture", "free_choice", "other")
