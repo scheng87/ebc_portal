@@ -73,7 +73,7 @@ adata = function()
                         h5(div(strong("Are there other efforts to expand from this evidence map or on other topics?"))),
                         p("You can read more about ongoing work to build this evidence base and conduct in-depth syntheses on some of these linkages in the",span(strong("RESEARCH"),style="color:#006666"), "tab"),
                         br(),
-                        div(htmlOutput("howto"),align="center"),
+                        div(htmlOutput("howto2"),align="center"),
                         br(),
                         h4(div(strong("FEEDBACK"))),
                         p("We are constantly developing and honing features in order to tailor this tool for our end-users. Any feedback would be very much appreciated on functionality and utility. Please see the ",span(strong("CONTACT"),style="color:#006666")," tab to fill out a feedback form or you can directly email the postdoctoral fellow, Samantha Cheng at ",a("cheng@nceas.ucsb.edu",href="cheng@nceas.ucsb.edu"),"."),
