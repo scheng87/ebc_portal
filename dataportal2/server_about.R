@@ -68,7 +68,7 @@ adata = function(env_serv) with (env_serv, {
     paste(as.character(studyex()))
   })
   
-  video2 <- ("https://www.youtube.com/embed/_goJyTgj8gA")
+  video2 <- ("https://youtu.be/MscOjSQMovs")
   output$howto2 <- renderUI({
     my_test <- tags$iframe(src=video, height=315, width=420,scrolling="no",allowfullscreen="yes")
     print(my_test)

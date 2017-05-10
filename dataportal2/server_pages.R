@@ -6,7 +6,7 @@ startp = function(env_serv) with (env_serv, {
     my_test
   })
   
-  video <- ("https://www.youtube.com/embed/_goJyTgj8gA")
+  video <- ("https://youtu.be/MscOjSQMovs")
   output$howto <- renderUI({
     my_test <- tags$iframe(src=video, height=315, width=420,scrolling="no",allowfullscreen="yes")
     print(my_test)
