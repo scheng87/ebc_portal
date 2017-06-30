@@ -20,7 +20,7 @@ fluidPage(
            wellPanel(
              width=NULL,
              h3(div(strong("ABOUT"),style="color:#006699")),
-             p("Welcome to the Evidence for Nature and People Data Portal! This portal features data from a systematic map on the impacts of conservation on human well-being in non-OECD nations (Bottrill et al. 2014, McKinnon et al. 2015, 2016) drawn from 1,042 peer-reviewed and grey literature. Here, you can access the knowledge management tool and various analytic dashboards for slicing the data. As we progress in our different initiatives (see ", span(strong("RESEARCH"),style="color:#006666"), "section), we will update this dashboard with beta versions of support tools and other analytics.")
+             p("Welcome to the Evidence for Nature and People Data Portal! This portal features data from a systematic map on the impacts of conservation on human well-being in non-OECD nations (Bottrill et al. 2014, McKinnon et al. 2015, 2016) drawn from 1,038 peer-reviewed and grey literature. Here, you can access the knowledge management tool and various analytic dashboards for slicing the data. As we progress in our different initiatives (see ", span(strong("RESEARCH"),style="color:#006666"), "section), we will update this dashboard with beta versions of support tools and other analytics.")
            )
     ),
     column(4,
