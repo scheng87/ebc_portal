@@ -109,10 +109,10 @@ elink = function(env_serv) with (env_serv, {
   
   output$map_data <- DT::renderDataTable({
     data <- distinct(dataInputC())
-    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,DOI,FullText)
-    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI","Open access?")
+    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,link,FullText)
+    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI Link","Open access?")
     data <- distinct(data)
-    DT::datatable(data)
+    DT::datatable(data, escape=FALSE)
   })
 
   biblio_maptab <- reactive({
@@ -303,10 +303,10 @@ eintout = function(env_serv) with (env_serv,{
   
   output$e_table <- DT::renderDataTable({
     data <- distinct(dataInputF())
-    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_location,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,DOI,FullText)
-    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Location of study","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI","Open access?")
+    data <- select(data,aid,Pub_type,Authors,Pub_year,Title,Journal,int_group,Int_type,Outcome,Study_country,subregion,region,Biome.,biome_group,IE,study_type,Comps,Comps.type,Comps.time,Design.qual_only,Design.assigned,Design.control,link,FullText)
+    colnames(data) <- c("Article ID","Publication type","Author(s)","Publication year","Title","Journal","Intervention group","Intervention sub-type","Outcome type","Country of study","Subregion of study","Region of study","Ecoregion of study","Major habitat type of study","Impact evaluation?","Does the study conduct comparisons?","What type of comparators are used?","Does the study conduct comparisons over time?","Does the study only use qualitative data?","Does the study assign groups to treatments?","Does the study employ a control?","DOI link","Open access?")
     data <- distinct(data)
-    DT::datatable(data)
+    DT::datatable(data, escape=FALSE)
   })
   
   ##=========

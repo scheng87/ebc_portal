@@ -136,4 +136,13 @@ map_data_final <- map_data_final[apply(map_data_final,1,function(x)any(!is.na(x)
 open <- read.csv("data+openaccess.csv",header=TRUE)
 map_data_final <- left_join(map_data_final,open,by="aid")
 
+##create DOI links
+map_data_final$link <- c("")
+nrows <- c(1:nrow(map_data_final))
+for (i in nrows){
+  doi <- as.character(map_data_final[i,"DOI"])
+  x <- sprintf("Link: '<a href=\"%s\" target=\"_blank\">\"%s\"</a>'",doi,doi)
+  map_data_final[i,"link"] <- x
+}
+
 saveRDS(map_data_final,file="map_data_final.rds")
